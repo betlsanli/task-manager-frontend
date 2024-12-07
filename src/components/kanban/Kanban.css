@@ -1,0 +1,170 @@
+/* General Styles for the Kanban Board */
+.kanban-container {
+  padding: 20px;
+  background-color: #f7f7f7;
+  min-height: 100%;
+}
+
+.kanban-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Columns Container */
+.columns-container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;  /* Ensure columns wrap to new rows if needed */
+  margin: 0 auto;  /* Center the columns container */
+  max-width: 100%;  /* Ensure it doesn't overflow */
+}
+
+/* Column Styles */
+.column-container {
+  width: calc(33.33% - 20px); /* Make each column take 1/3 of the space, minus the gap */
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;  /* Make sure padding doesn't affect width calculation */
+  position: relative; /* This allows absolute positioning for the + button */
+}
+
+/* Column Title (Header) */
+.column-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  position: relative; /* Necessary for absolute positioning of the + button */
+}
+
+/* "+" Button for adding task (now an icon) */
+.add-task-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #4CAF50;  /* Green color for the icon */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.add-task-button:hover {
+  color: #45a049; /* Darker green on hover */
+}
+
+@media (max-width: 768px) {
+  /* Adjust for smaller screens, for example, 2 columns or stack them */
+  .column-container {
+    width: calc(50% - 20px);  /* 2 columns on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Adjust for very small screens (mobile), stack columns vertically */
+  .column-container {
+    width: 100%;  /* 1 column on very small screens */
+  }
+}
+
+
+.column-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Task Cards Container */
+.task-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Task Card Styles */
+.task-card {
+  background-color: #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.task-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.task-description {
+  font-size: 0.875rem;
+  color: #555;
+  margin-top: 8px;
+}
+
+/* Add a smooth drag effect to the task cards */
+.task-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-card:active {
+  transform: scale(0.98);
+}
+
+/* Task Form Styling */
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.task-form input,
+.task-form textarea {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+}
+
+.task-form input:focus,
+.task-form textarea:focus {
+  outline-color: #4CAF50;
+}
+
+.task-form .form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.task-form button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-form button[type="button"] {
+  background-color: #f44336; /* Red color for cancel */
+}
+
+.task-form button:hover {
+  background-color: #45a049;
+}
+
+.task-form button[type="button"]:hover {
+  background-color: #d32f2f; /* Darker red on cancel hover */
+}
+
