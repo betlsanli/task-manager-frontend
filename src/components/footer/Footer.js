@@ -3,7 +3,7 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
 function Footer() {
   return (
-    <BottomNavigation sx={{ backgroundColor: 'primary.light' }}>
+    <BottomNavigation sx={{ backgroundColor: 'primary.dark' }}>
       <BottomNavigationAction label="Footer Content"/>
     </BottomNavigation>
   );

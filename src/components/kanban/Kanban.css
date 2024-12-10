@@ -1,8 +1,10 @@
 /* General Styles for the Kanban Board */
 .kanban-container {
   padding: 20px;
-  background-color: #f7f7f7;
+  background-color: #121212;
   min-height: 100%;
+  color: #FFFFFF; /* White text */
+
 }
 
 .kanban-title {
@@ -10,6 +12,8 @@
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 20px;
+  color: #FFFFFF; /* White text */
+
 }
 
 /* Columns Container */
@@ -25,19 +29,21 @@
 /* Column Styles */
 .column-container {
   width: calc(33.33% - 20px); /* Make each column take 1/3 of the space, minus the gap */
-  background-color: white;
+  background-color: #1E1E1E;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Stronger shadow for dark theme */
   box-sizing: border-box;  /* Make sure padding doesn't affect width calculation */
   position: relative; /* This allows absolute positioning for the + button */
+  color: #FFFFFF; /* White text */
+
 }
 
 /* Column Title (Header) */
 .column-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
+  color: #FFFFFF;
   margin-bottom: 15px;
   position: relative; /* Necessary for absolute positioning of the + button */
 }
@@ -45,15 +51,14 @@
 /* "+" Button for adding task (now an icon) */
 .add-task-button {
   position: absolute;
-  top: 10px;
   right: 10px;
-  color: #4CAF50;  /* Green color for the icon */
+  color: #BB86FC;  
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .add-task-button:hover {
-  color: #45a049; /* Darker green on hover */
+  color: #D1A3FF; 
 }
 
 @media (max-width: 768px) {
@@ -71,13 +76,6 @@
 }
 
 
-.column-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 15px;
-}
-
 /* Task Cards Container */
 .task-cards-container {
   display: flex;
@@ -87,27 +85,30 @@
 
 /* Task Card Styles */
 .task-card {
-  background-color: #e0e0e0;
+  background-color: #333333;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Stronger shadow */
   cursor: pointer;
   transition: box-shadow 0.2s ease-in-out;
+  color: #FFFFFF; /* White text */
+
 }
 
 .task-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7); /* Deeper shadow on hover */
+  background-color: #424242; /* Slightly lighter gray on hover */
 }
 
 .task-title {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #333;
+  color: #FFFFFF;
 }
 
 .task-description {
   font-size: 0.875rem;
-  color: #555;
+  color: #B0BEC5;
   margin-top: 8px;
 }
 
@@ -132,14 +133,16 @@
 .task-form textarea {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #424242;
   border-radius: 5px;
+  background-color: #2E2E2E; /* Dark input background */
+  color: #FFFFFF;
   resize: none;
 }
 
 .task-form input:focus,
 .task-form textarea:focus {
-  outline-color: #4CAF50;
+  outline-color: #BB86FC;
 }
 
 .task-form .form-actions {
@@ -149,7 +152,7 @@
 
 .task-form button {
   padding: 8px 16px;
-  background-color: #4CAF50;
+  background-color: #BB86FC;
   color: white;
   border: none;
   border-radius: 5px;
@@ -157,14 +160,25 @@
 }
 
 .task-form button[type="button"] {
-  background-color: #f44336; /* Red color for cancel */
+  background-color: #CF6679; /* Red color for cancel */
 }
 
 .task-form button:hover {
-  background-color: #45a049;
+  background-color: #D1A3FF;
 }
 
 .task-form button[type="button"]:hover {
-  background-color: #d32f2f; /* Darker red on cancel hover */
+  background-color: #B00020; /* Darker red on cancel hover */
 }
 
+.task-due-date {
+  font-size: 0.9em;
+  color: #B7BBEE; /* Red to signify urgency */
+  margin-top: 4px;
+}
+
+.task-priority {
+  font-size: 0.9em;
+  color: #B7BBEE; /* Red to signify urgency */
+  margin-top: 4px;
+}

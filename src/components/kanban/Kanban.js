@@ -1,37 +1,104 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Column from './column/Column.js';
 import { TaskStatus } from './types.js';
 import './Kanban.css';
 import { DndContext } from '@dnd-kit/core';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid package
+//import TaskModal from './taskcard/TaskModal'; 
 
-// Initial tasks data
-const initialTasks = [
-  { 
-    id: '1', 
-    title: 'Task 1', 
-    description: 'Description for Task 1', 
-    status: TaskStatus.TO_DO,
+//Sample Users Data
+const sampleUsers = [
+  { id: '1', firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+  { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob.smith@example.com' },
+  { id: '3', firstName: 'Charlie', lastName: 'Brown', email: 'charlie.brown@example.com' },
+];
+
+//will fix it
+//Sample Tasks Data
+const sampleTasks = [
+  {
+    id: 'task-1',
+    title: 'Setup project repository',
+    description: 'Initialize GitHub repo',
+    priority: 'HIGH',
+    status: 'TO_DO',
+    dueDate: '2024-12-30T00:00:00Z',
+    startedAt: null,
+    completedAt: null,
+    createdAt: '2024-12-01T12:00:00Z',
+    lastModifiedAt: '2024-12-01T12:00:00Z',
+    projectId: 'project-1',
+    assignees: [
+      { id: '1', firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+      { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob.smith@example.com' }
+    ],
   },
-  { 
-    id: '2', 
-    title: 'Task 2', 
-    description: 'Description for Task 2', 
-    status: TaskStatus.TO_DO,
+  {
+    id: 'task-2',
+    title: 'Design database schema',
+    description: 'Define tables for user management',
+    priority: 'MEDIUM',
+    status: 'TO_DO',
+    dueDate: '2024-12-20T00:00:00Z',
+    startedAt: null,
+    completedAt: null,
+    createdAt: '2024-12-01T12:00:00Z',
+    lastModifiedAt: '2024-12-01T12:00:00Z',
+    projectId: 'project-1',
+    assignees: [
+      { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob.smith@example.com' },
+    ],
   },
-  { 
-    id: '3', 
-    title: 'Task 3', 
-    description: 'Description for Task 3', 
-    status: TaskStatus.IN_PROGRESS,
+  {
+    id: 'task-3',
+    title: 'Implement user login',
+    description: 'Develop authentication flow for login',
+    priority: 'HIGH',
+    status: 'IN_PROGRESS',
+    dueDate: '2024-12-25T00:00:00Z',
+    startedAt: '2024-12-10T00:00:00Z',
+    completedAt: null,
+    createdAt: '2024-12-01T12:00:00Z',
+    lastModifiedAt: '2024-12-01T12:00:00Z',
+    projectId: 'project-2',
+    assignees: [
+      { id: '2', firstName: 'Bob', lastName: 'Smith', email: 'bob.smith@example.com' },
+    ],
   },
-  { 
-    id: '4', 
-    title: 'Task 4', 
-    description: 'Description for Task 4', 
-    status: TaskStatus.DONE,
+  {
+    id: 'task-4',
+    title: 'Test user signup flow',
+    description: 'Ensure signup works with edge cases',
+    priority: 'LOW',
+    status: 'DONE',
+    dueDate: '2024-12-15T00:00:00Z',
+    startedAt: '2024-12-05T00:00:00Z',
+    completedAt: '2024-12-08T00:00:00Z',
+    createdAt: '2024-12-01T12:00:00Z',
+    lastModifiedAt: '2024-12-08T12:00:00Z',
+    projectId: 'project-2',
+    assignees: [
+      { id: '3', firstName: 'Charlie', lastName: 'Brown', email: 'charlie.brown@example.com' },
+    ],
+  },
+  {
+    id: 'task-5',
+    title: 'Prepare UI wireframes',
+    description: 'Design initial wireframes for dashboard UI',
+    priority: 'HIGH',
+    status: 'IN_PROGRESS',
+    dueDate: '2024-12-22T00:00:00Z',
+    startedAt: '2024-12-10T00:00:00Z',
+    completedAt: null,
+    createdAt: '2024-12-01T12:00:00Z',
+    lastModifiedAt: '2024-12-10T12:00:00Z',
+    projectId: 'project-1',
+    assignees: [
+      { id: '1', firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com' },
+    ],
   },
 ];
+
 
 const columns = [
   { id: TaskStatus.TO_DO, title: 'To Do' },
@@ -39,9 +106,51 @@ const columns = [
   { id: TaskStatus.DONE, title: 'Done' },
 ];
 
-const Kanban = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+//we will handle the infinite scroll horizontally later
 
+const Kanban = () => {
+  //const [tasks, setTasks] = useState(initialTasks);
+
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        //const response = await axios.get('/api/tasks');
+        //setTasks(response.data);
+        setTasks(sampleTasks);
+
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  /*
+  const [tasks, setTasks] = useState([]); // Task state
+  const [users, setUsers] = useState([]); // Users state
+
+  // Fetch users and tasks dynamically
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const usersResponse = await axios.get('/api/users');
+        const tasksResponse = await axios.get('/api/tasks');
+
+        setUsers(usersResponse.data);
+        setTasks(tasksResponse.data);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  */
+ 
+  /*
   const handleDragEnd = (event) => {
     const { active, over } = event;
   
@@ -57,6 +166,21 @@ const Kanban = () => {
               ...task,
               status: newStatus,
             }
+          : task
+      )
+    );
+  };
+*/
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const newStatus = over.id;
+
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === active.id
+          ? { ...task, status: newStatus }
           : task
       )
     );
@@ -82,10 +206,13 @@ const Kanban = () => {
               column={column}
               tasks={tasks.filter((task) => task.status === column.id)}
               onAddTask={handleAddTask} // Pass the task adding function to Column
+             // onTaskClick={handleTaskClick}
+
             />
           ))}
         </DndContext>
       </div>
+      
     </div>
   );
 };

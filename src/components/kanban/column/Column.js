@@ -88,7 +88,7 @@ export function Column({ column, tasks, onAddTask }) {
 
       <div className="task-cards-container">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} />  //onClick={() => onTaskClick(task)}
         ))}
       </div>
     </div>
