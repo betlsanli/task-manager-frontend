@@ -5,6 +5,7 @@ import './Kanban.css';
 import { DndContext } from '@dnd-kit/core';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid package
 //import TaskModal from './taskcard/TaskModal'; 
+import axios from 'axios';
 
 //Sample Users Data
 const sampleUsers = [
@@ -108,69 +109,25 @@ const columns = [
 
 //we will handle the infinite scroll horizontally later
 
-const Kanban = () => {
+const Kanban = ({projectId}) => {
   //const [tasks, setTasks] = useState(initialTasks);
 
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        //const response = await axios.get('/api/tasks');
-        //setTasks(response.data);
-        setTasks(sampleTasks);
+    if (!projectId) return;
+    try {
+      axios.get(`/task/of-project/${projectId}`)
+      .then((response) => setTasks(response.data))
+      .catch((error) => console.error('Error fetching tasks:', error));
+      
+      //setTasks(sampleTasks);
 
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      }
-    };
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  }, [projectId]);
 
-    fetchTasks();
-  }, []);
-
-  /*
-  const [tasks, setTasks] = useState([]); // Task state
-  const [users, setUsers] = useState([]); // Users state
-
-  // Fetch users and tasks dynamically
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const usersResponse = await axios.get('/api/users');
-        const tasksResponse = await axios.get('/api/tasks');
-
-        setUsers(usersResponse.data);
-        setTasks(tasksResponse.data);
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  */
- 
-  /*
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-  
-    if (!over) return;
-  
-    const taskId = active.id;
-    const newStatus = over.id;
-  
-    setTasks(() =>
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: newStatus,
-            }
-          : task
-      )
-    );
-  };
-*/
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over) return;
@@ -191,7 +148,7 @@ const Kanban = () => {
       ...prevTasks,
       {
         ...newTask,
-        id: uuidv4(), // Use uuid to generate a unique ID for the new task
+        id: uuidv4(),
       },
     ]);
   };
@@ -205,7 +162,7 @@ const Kanban = () => {
               key={column.id}
               column={column}
               tasks={tasks.filter((task) => task.status === column.id)}
-              onAddTask={handleAddTask} // Pass the task adding function to Column
+              onAddTask={handleAddTask} 
              // onTaskClick={handleTaskClick}
 
             />

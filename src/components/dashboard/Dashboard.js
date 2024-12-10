@@ -125,80 +125,19 @@ const Dashboard = () => {
     ];
     setUsers(sampleUsers);
 
-    // Mock sample projects
-    const sampleProjects = [
-      { id: 1, name: "Project 1", description: "A project for building the dashboard." },
-      { id: 2, name: "Project 2", description: "A database integration project." },
-      { id: 3, name: "Project 3", description: "Deployment pipelines optimization." },
-      { id: 4, name: "Project 4", description: "Unit testing on key features." },
-      { id: 5, name: "Project 5", description: "Bug fixes and code cleanup." },
-    ];
-    setProjects(sampleProjects);
+    try {
+      axios.get('/project/all-project')
+        .then((response) => setProjects(response.data))
+        .catch((error) => console.error('Error fetching projects:', error));
+    } catch (error) { console.error('Error fetching projects:', error); }
 
-    // Mock sample tasks
-    const sampleTasks = [
-      {
-        id: 1,
-        name: "Design Homepage",
-        description: "Design UI for the main page.",
-        projectId: 1,
-        project: "Project 1",
-        priority: "High",
-        status: "TO_DO",
-        assignedUsers: ['John Doe', 'Jane Smith'], //will do it by id
-      },
-      {
-        id: 2,
-        name: "Setup Database",
-        description: "Set up schema for PostgreSQL.",
-        projectId: 2,
-        project: "Project 2",
-        priority: "Medium",
-        status: "IN_PROGRESS",
-        assignedUsers: ['Jane Smith'],
-      },
-      {
-        id: 3,
-        name: "Deploy App",
-        description: "Deploy the latest version to production.",
-        projectId: 3,
-        project: "Project 3",
-        priority: "Low",
-        status: "DONE",
-        assignedUsers: ['John Doe'],
-      },
-      {
-        id: 4,
-        name: "Write Unit Tests",
-        description: "For user authentication.",
-        projectId: 4,
-        project: "Project 4",
-        priority: "High",
-        status: "TO_DO",
-        assignedUsers: ['Jane Smith'],
-      },
-      {
-        id: 5,
-        name: "Fix Reported Bugs",
-        description: "Resolve crash issues in frontend.",
-        projectId: 5,
-        project: "Project 5",
-        priority: "Medium",
-        status: "IN_PROGRESS",
-        assignedUsers: ['John Doe'],
-      },
-      {
-        id: 6,
-        name: "Design Dashboard UI",
-        description: "Optimize design patterns for better UX.",
-        projectId: 1,
-        project: "Project 1",
-        priority: "Low",
-        status: "TO_DO",
-        assignedUsers: ['Jane Smith', 'John Doe'],
-      },
-    ];
-    setTasks(sampleTasks);
+    try {
+      axios.get('/task/all-task')
+        .then((response) => setTasks(response.data))
+        .catch((error) => console.error('Error fetching tasks:', error));
+    } catch (error) { console.error('Error fetching tasks:', error); }
+
+
   }, []);
 
 
@@ -254,10 +193,8 @@ const Dashboard = () => {
                 },
               }}
             >
-              <Typography variant="h6">{project.name}</Typography>
-              <Typography variant="body2" color="textSecondary" mb={1}>
-                {project.description}
-              </Typography>
+              <Typography variant="h6">{project.title}</Typography>
+              
             </Box>
           </Link>
         ))}
@@ -299,7 +236,7 @@ const Dashboard = () => {
               },
             }}
           >
-            <Typography variant="h6">{task.name}</Typography>
+            <Typography variant="h6">{task.title}</Typography>
             <Typography variant="body2" color="textSecondary" mb={1}>
               Project: {task.project}
             </Typography>
@@ -309,9 +246,7 @@ const Dashboard = () => {
             <Typography variant="body2" color="textSecondary" mb={1}>
               Status: {statusLabels[task.status]}
             </Typography>
-            <Typography variant="body2" color="textSecondary" mb={1}>
-              Assigned Users: {task.assignedUsers.join(", ")}
-            </Typography>
+            
 
             {/* Status Indicator Circle */}
             <Box
