@@ -4,4 +4,10 @@ const TaskStatus = {
   IN_PROGRESS: 'IN_PROGRESS',
   DONE: 'DONE',
 };
-export { TaskStatus };
+const TaskPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL',
+};
+export { TaskStatus, TaskPriority };

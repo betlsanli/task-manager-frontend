@@ -1,11 +1,12 @@
 import { useDroppable } from '@dnd-kit/core';
 import TaskCard from '../taskcard/TaskCard.js';
+import TaskDetail from '../taskDetail/TaskDetail.js';
 import { AddCircle } from '@mui/icons-material';
 import { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
-import '../Kanban.css'; // Import the CSS file
+import '../Kanban.css';
 
-export function Column({ column, tasks, onAddTask }) {
+export function Column({ column, tasks, onAddTask, onUpdateTask }) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
@@ -13,6 +14,8 @@ export function Column({ column, tasks, onAddTask }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedTask, setSelectedTask] = useState(null); // Task selected for detail view
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false); // Controls detail dialog visibility
 
   const handleAddTaskClick = () => {
     setIsDialogOpen(true);
@@ -24,18 +27,19 @@ export function Column({ column, tasks, onAddTask }) {
     setDescription('');
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (title.trim() && description.trim()) {
-      const newTask = {
-        id: String(tasks.length + 1),
-        title,
-        description,
-        status: column.id,
-      };
-      onAddTask(newTask);
-      handleCloseDialog();
-    }
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsDetailDialogOpen(true); // Open the dialog when a task is clicked
+  };
+
+  const handleCloseDetailDialog = () => {
+    setIsDetailDialogOpen(false);
+    setSelectedTask(null); // Clear the selected task
+  };
+
+  const handleSaveTask = (updatedTask) => {
+    onUpdateTask(updatedTask); // Update task in parent state
+    setIsDetailDialogOpen(false); // Close the detail dialog
   };
 
   return (
@@ -49,46 +53,23 @@ export function Column({ column, tasks, onAddTask }) {
         />
       </div>
 
-      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Add New Task</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Task Title"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          <TextField
-            margin="dense"
-            label="Task Description"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            multiline
-            rows={4}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleFormSubmit} color="primary">
-            Add Task
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Task Detail Dialog */}
+      {selectedTask && (
+        <TaskDetail
+          open={isDetailDialogOpen}
+          task={selectedTask}
+          onClose={handleCloseDetailDialog}
+          onSave={handleSaveTask} // Pass save handler to TaskDetail
+        />
+      )}
 
       <div className="task-cards-container">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />  //onClick={() => onTaskClick(task)}
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={handleTaskClick} // Pass click handler to TaskCard
+          />
         ))}
       </div>
     </div>
