@@ -50,15 +50,20 @@
 
 /* "+" Button for adding task (now an icon) */
 .add-task-button {
-  position: absolute;
-  right: 10px;
-  color: #BB86FC;  
+  color: #ffffff;  
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+  padding: 8px;
+  border: 2px solid transparent; /* Border matching the button text */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #664192; /* Keep transparent to match minimal design */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+
 }
 
 .add-task-button:hover {
-  color: #D1A3FF; 
+  background-color: #BB86FC; 
 }
 
 @media (max-width: 768px) {

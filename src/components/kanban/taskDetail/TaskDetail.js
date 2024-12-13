@@ -1,181 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, FormControl, InputLabel,
-  Select, MenuItem, Button, IconButton
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { TaskPriority, TaskStatus } from '../types.js';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Modal, Avatar, Table, Button, Input, DatePicker, Select, Form } from 'antd';
 import dayjs from 'dayjs';
 import axios from 'axios';
+import './TaskDetail.css';
 
-// Define the priorities array
-const priorities = [
-  { id: TaskPriority.LOW, title: 'Low' },
-  { id: TaskPriority.MEDIUM, title: 'Medium' },
-  { id: TaskPriority.HIGH, title: 'High' },
-  { id: TaskPriority.CRITICAL, title: 'Critical' },
+const { Option } = Select;
+
+const formatDate = (date) => (date ? dayjs(date).format('YYYY-MM-DD HH:mm') : 'N/A');
+
+const priorityOptions = [
+  { key: 'LOW', value: 'Low' },
+  { key: 'MEDIUM', value: 'Medium' },
+  { key: 'HIGH', value: 'High' },
+  { key: 'CRITICAL', value: 'Critical' },
 ];
 
-const statuses = [
-  { id: TaskStatus.TO_DO, title: 'To Do' },
-  { id: TaskStatus.IN_PROGRESS, title: 'In Progress' },
-  { id: TaskStatus.DONE, title: 'Done' },
+const statusOptions = [
+  { key: 'TO_DO', value: 'To Do' },
+  { key: 'IN_PROGRESS', value: 'In Progress' },
+  { key: 'DONE', value: 'Done' },
 ];
 
-const TaskDetail = ({
-  open,
-  task,
-  onClose,
-  onSave,
-}) => {
+const TaskDetails = ({ visible, task, onClose, onSave }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState(task);
+  const [taskData, setTaskData] = useState(task);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    setEditedTask(task);
-    setIsEditing(false);
+    if (task) {
+      setTaskData(task);
+      form.setFieldsValue({
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        status: task.status,
+        dueDate: task.dueDate ? dayjs(task.dueDate) : null,
+        /* startedAt: task.startedAt ? dayjs(task.startedAt) : null,
+        completedAt: task.completedAt ? dayjs(task.completedAt) : null, */
+      });
+    }
   }, [task]);
 
-  const handleChange = (field, value) => {
-    setEditedTask((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleSaveClick = () => {
+    form.validateFields().then((values) => {
+      const updatedTask = { ...taskData, ...values };
+      axios
+        .put(`/task/edit/${task.id}`, updatedTask)
+        .then((response) => {
+          onSave(response.data); // Pass updated task to parent
+          setIsEditing(false);
+        })
+        .catch((error) => {
+          console.error('Failed to update task', error);
+        });
+    });
   };
 
-  const handleSaveClick = () => {
-    // Validate fields and send an update request
-    const updatedTask = { ...task, ...editedTask };
-    axios.put(`/task/edit/${task.id}`, updatedTask)
-      .then((response) => {
-        const updatedTaskData = response.data;
-        setEditedTask(updatedTaskData);
-        onSave(updatedTaskData); // Notify parent of changes
-        setIsEditing(false);
-      })
-      .catch((error) => {
-        console.error('Failed to update task', error);
-      });
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    form.resetFields();
+    onClose(); // Close the modal
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        Task Details
-        <IconButton
-          aria-label="edit"
-          onClick={() => setIsEditing((prev) => !prev)}
-          style={{ position: 'absolute', right: 16, top: 16 }}
-        >
-          <EditIcon />
-        </IconButton>
-      </DialogTitle>
-      <form>
-        <DialogContent>
-          {/* Title */}
-          <TextField
-            margin="normal"
-            label="Task Title"
-            variant="outlined"
-            fullWidth
-            value={editedTask?.title || ''}
-            onChange={(e) => handleChange('title', e.target.value)}
-            InputProps={{
-              readOnly: !isEditing,
-            }}
-            required
-          />
-          {/* Description */}
-          <TextField
-            margin="normal"
-            label="Task Description"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={3}
-            value={editedTask?.description || ''}
-            onChange={(e) => handleChange('description', e.target.value)}
-            InputProps={{
-              readOnly: !isEditing,
-            }}
-          />
-          {/* Priority Dropdown */}
-          <FormControl fullWidth margin="normal" disabled={!isEditing}>
-            <InputLabel>Priority</InputLabel>
-            <Select
-              value={editedTask?.priority || ''}
-              onChange={(e) => handleChange('priority', e.target.value)}
-              required
-            >
-              {priorities.map((priority) => (
-                <MenuItem key={priority.id} value={priority.id}>
-                  {priority.title}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {/* Status Dropdown */}
-          <FormControl fullWidth margin="normal" disabled={!isEditing}>
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={editedTask?.status || ''}
-              onChange={(e) => handleChange('status', e.target.value)}
-              required
-            >
-              {statuses.map((status) => (
-                <MenuItem key={status.id} value={status.id}>
-                  {status.title}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {/* Date Pickers */}
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Due Date"
-              value={editedTask?.dueDate ? dayjs(editedTask.dueDate) : null}
-              onChange={(date) => handleChange('dueDate', date?.toISOString())}
-              disabled={!isEditing}
-              renderInput={(props) => (
-                <TextField {...props} fullWidth margin="normal" />
-              )}
-            />
-            <DateTimePicker
-              label="Started At"
-              value={editedTask?.startedAt ? dayjs(editedTask.startedAt) : null}
-              onChange={(date) => handleChange('startedAt', date?.toISOString())}
-              disabled={!isEditing}
-              renderInput={(props) => (
-                <TextField {...props} fullWidth margin="normal" />
-              )}
-            />
-            <DateTimePicker
-              label="Completed At"
-              value={editedTask?.completedAt ? dayjs(editedTask.completedAt) : null}
-              onChange={(date) => handleChange('completedAt', date?.toISOString())}
-              disabled={!isEditing}
-              renderInput={(props) => (
-                <TextField {...props} fullWidth margin="normal" />
-              )}
-            />
-          </LocalizationProvider>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="secondary">
-            Close
-          </Button>
-          {isEditing && (
-            <Button type="button" onClick={handleSaveClick} color="primary">
+    <Modal
+      visible={visible}
+      title={`Task Details - ${taskData?.title || ''}`}
+      onCancel={handleCancelClick}
+      footer={[
+        isEditing ? (
+          <>
+            <Button key="cancel" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button key="save" type="primary" onClick={handleSaveClick}>
               Save
             </Button>
-          )}
-        </DialogActions>
-      </form>
-    </Dialog>
+          </>
+        ) : (
+          <Button key="edit" type="primary" onClick={() => setIsEditing(true)}>
+            Edit
+          </Button>
+        ),
+      ]}
+    >
+      
+
+      <Form form={form} layout="vertical" disabled={!isEditing}>
+        <Form.Item
+          label="Title"
+          name="title"
+          rules={[
+            { required: true, message: 'Please enter the task title' },
+            { max: 128, message: 'Title cannot be more than 128 characters long' },
+          ]}
+        >
+          <Input />
+      </Form.Item>
+
+      <div className="task-meta">
+            <div>
+              <p>Created At: {formatDate(task.createdAt)}</p>
+            </div>
+            <div>
+              <p>Last Modified At: {formatDate(task.lastModifiedAt)}</p>
+            </div>
+      </div>
+
+        <Form.Item
+          label="Description"
+          name="description"
+          rules={[{ max: 512, message: 'Description cannot be more than 512 characters long' }]}
+        >
+          <Input.TextArea style={{ minHeight: '128px' }} />
+        </Form.Item>
+
+        <Form.Item label="Priority" name="priority">
+          <Select>
+            {priorityOptions.map((option) => (
+              <Option key={option.key} value={option.key}>
+                {option.value}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Status" name="status">
+          <Select>
+            {statusOptions.map((option) => (
+              <Option key={option.key} value={option.key}>
+                {option.value}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Due Date" name="dueDate">
+          <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
+        </Form.Item>
+        <div className="task-meta">
+            <div>
+              <p>Started At: {formatDate(task.startedAt)}</p>
+            </div>
+            <div>
+              <p>Completed At: {formatDate(task.completedAt)}</p>
+            </div>
+      </div>
+      </Form>
+    </Modal>
   );
 };
 
-export default TaskDetail;
+export default TaskDetails;

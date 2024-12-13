@@ -6,6 +6,8 @@ import { DndContext } from '@dnd-kit/core';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid package
 //import TaskModal from './taskcard/TaskModal'; 
 import axios from 'axios';
+import TaskCreator from './taskCreator/TaskCreator.js';
+
 
 
 const columns = [
@@ -14,12 +16,11 @@ const columns = [
   { id: TaskStatus.DONE, title: 'Done' },
 ];
 
-//we will handle the infinite scroll horizontally later
 
 const Kanban = ({projectId}) => {
-  //const [tasks, setTasks] = useState(initialTasks);
-
   const [tasks, setTasks] = useState([]);
+  const [isTaskModalVisible, setTaskModalVisible] = useState(false);
+
 
   useEffect(() => {
     if (!projectId) return;
@@ -27,8 +28,6 @@ const Kanban = ({projectId}) => {
       axios.get(`/task/of-project/${projectId}`)
       .then((response) => setTasks(response.data))
       .catch((error) => console.error('Error fetching tasks:', error));
-      
-      //setTasks(sampleTasks);
 
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -75,14 +74,12 @@ const Kanban = ({projectId}) => {
   };
   
 
-  const handleAddTask = (newTask) => {
-    setTasks((prevTasks) => [
-      ...prevTasks,
-      {
-        ...newTask,
-        id: uuidv4(),
-      },
-    ]);
+  const toggleTaskModal = () => {
+    setTaskModalVisible(!isTaskModalVisible);
+  };
+
+  const addNewTaskToProject = (task) => {
+    setTasks(prev => [...prev, task]);
   };
 
   const handleUpdateTask = (updatedTask) => {
@@ -93,6 +90,12 @@ const Kanban = ({projectId}) => {
 
   return (
     <div className="kanban-container">
+      <button
+        className="add-task-button"
+        onClick={toggleTaskModal}
+      >
+        Create Task
+      </button>
       <div className="columns-container">
         <DndContext onDragEnd={handleDragEnd}>
           {columns.map((column) => (
@@ -100,14 +103,18 @@ const Kanban = ({projectId}) => {
               key={column.id}
               column={column}
               tasks={tasks.filter((task) => task.status === column.id)}
-              onAddTask={handleAddTask} 
-             // onTaskClick={handleTaskClick}
-             onUpdateTask={handleUpdateTask}
+              onUpdateTask={handleUpdateTask}
             />
           ))}
         </DndContext>
       </div>
-      
+      {/* TaskCreator Modal */}
+      <TaskCreator
+        visible={isTaskModalVisible}
+        onClose={toggleTaskModal}
+        addNewTaskToProject={addNewTaskToProject}
+        projectId={projectId}
+      />
     </div>
   );
 };

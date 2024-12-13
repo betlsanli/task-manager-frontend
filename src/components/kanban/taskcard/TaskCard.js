@@ -7,7 +7,7 @@ const statusColors = {
   DONE: 'rgba(51, 131, 9, 0.68)',
 };
 
-export function TaskCard({ task, onClick }) {
+export function TaskCard({ task, onDoubleClick }) {
   const assignedUser = task.assignees?.[0];
 
   const formattedDueDate = task.dueDate
@@ -36,7 +36,7 @@ export function TaskCard({ task, onClick }) {
       {...attributes}
       className="task-card"
       style={style}
-      onClick={() => onClick(task)} // Click listener for opening the TaskDetail modal
+      onDoubleClick={() => onDoubleClick(task)} // Click listener for opening the TaskDetail modal
     >
       <h3 className="task-title">{task.title}</h3>
       <p className="task-description">{task.description}</p>
