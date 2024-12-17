@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Avatar, Table, Button, Input, DatePicker, Select, Form } from 'antd';
+import { Modal, Avatar, Tabs, Button, Input, DatePicker, Select, Form } from 'antd';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import './TaskDetail.css';
+import TaskUserDetails from '../taskUserDetails/TaskUserDetails';
+import DeleteConfirmationModal from '../../taskDeletion/DeleteConfirmationModal';
+
+const { TabPane } = Tabs;
 
 const { Option } = Select;
 
@@ -21,10 +25,12 @@ const statusOptions = [
   { key: 'DONE', value: 'Done' },
 ];
 
-const TaskDetails = ({ visible, task, onClose, onSave }) => {
+const TaskDetail = ({ visible, task, onClose, onSave, handleDeleteTask}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [taskData, setTaskData] = useState(task);
   const [form] = Form.useForm();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
 
   useEffect(() => {
     if (task) {
@@ -42,8 +48,23 @@ const TaskDetails = ({ visible, task, onClose, onSave }) => {
   }, [task]);
 
   const handleSaveClick = () => {
+    const now = new Date();
     form.validateFields().then((values) => {
       const updatedTask = { ...taskData, ...values };
+
+      // Update startedAt and completedAt based on the new status
+    if (updatedTask.status === 'TO_DO') {
+      updatedTask.startedAt = null;
+      updatedTask.completedAt = null;
+    } 
+    else if (updatedTask.status === 'IN_PROGRESS') {
+      updatedTask.startedAt = updatedTask.startedAt || now; // Define startedAt if not already set
+      updatedTask.completedAt = null; // Ensure completedAt is null
+    } 
+    else if (updatedTask.status === 'DONE') {
+      updatedTask.completedAt = updatedTask.completedAt || now; // Define completedAt if not already set
+    }
+
       axios
         .put(`/task/edit/${task.id}`, updatedTask)
         .then((response) => {
@@ -62,93 +83,134 @@ const TaskDetails = ({ visible, task, onClose, onSave }) => {
     onClose(); // Close the modal
   };
 
+  const handleOpenDeleteModal = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+  };
+
+  const onTaskDeleted = (taskId) =>{
+    handleDeleteTask(taskId);
+    onClose(); // Close the modal
+  }
   return (
-    <Modal
-      visible={visible}
-      title={`Task Details - ${taskData?.title || ''}`}
-      onCancel={handleCancelClick}
-      footer={[
-        isEditing ? (
-          <>
-            <Button key="cancel" onClick={handleCancelClick}>
-              Cancel
-            </Button>
-            <Button key="save" type="primary" onClick={handleSaveClick}>
-              Save
-            </Button>
-          </>
+    <>
+      {/* Main Task Details Modal */}
+      <Modal
+        visible={visible}
+        title={`Task Details - ${taskData?.title || ''}`}
+        onCancel={handleCancelClick}
+        footer={[]} 
+      >
+        {task ? (
+        <>
+          <Tabs defaultActiveKey="1" style={{ marginTop: '-24px' }}>
+
+            <TabPane tab="Details" key="1">
+
+              <Form form={form} layout="vertical" disabled={!isEditing}>
+                <Form.Item
+                  label="Title"
+                  name="title"
+                  rules={[
+                    { required: true, message: 'Please enter the task title' },
+                    { max: 128, message: 'Title cannot be more than 128 characters long' },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+
+                <div className="task-meta">
+                  <div>
+                    <p>Created At: {formatDate(task.createdAt)}</p>
+                  </div>
+                  <div>
+                    <p>Last Modified At: {formatDate(task.lastModifiedAt)}</p>
+                  </div>
+                </div>
+
+                <Form.Item
+                  label="Description"
+                  name="description"
+                  rules={[{ max: 512, message: 'Description cannot be more than 512 characters long' }]}
+                >
+                  <Input.TextArea style={{ minHeight: '128px' }} />
+                </Form.Item>
+
+                <Form.Item label="Priority" name="priority">
+                  <Select>
+                    {priorityOptions.map((option) => (
+                      <Option key={option.key} value={option.key}>
+                        {option.value}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item label="Status" name="status">
+                  <Select>
+                    {statusOptions.map((option) => (
+                      <Option key={option.key} value={option.key}>
+                        {option.value}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+
+                <Form.Item label="Due Date" name="dueDate">
+                  <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
+                </Form.Item>
+              </Form>
+
+              <>
+                {!isEditing && (
+                <>
+                  <Button key="delete" type="danger" style={{ marginRight: '8px' }} onClick={handleOpenDeleteModal}>
+                    Delete
+                  </Button>
+                  <Button key="edit" type="primary" onClick={() => setIsEditing(true)}>
+                    Edit
+                  </Button>
+                </>
+                )}
+                {isEditing && (
+                  <>
+                    <Button key="cancel" style={{ marginRight: '8px' }} onClick={handleCancelClick}>
+                      Cancel
+                    </Button>
+                    <Button key="save" type="primary" onClick={handleSaveClick}>
+                      Save
+                    </Button>
+                  </>
+                )}
+                </>
+
+            </TabPane>
+
+            <TabPane tab="Users" key="2">
+              <TaskUserDetails task={task} />
+            </TabPane>
+
+          </Tabs>
+        </>
         ) : (
-          <Button key="edit" type="primary" onClick={() => setIsEditing(true)}>
-            Edit
-          </Button>
-        ),
-      ]}
-    >
-      
+          <p>Loading...</p>
+        )}
 
-      <Form form={form} layout="vertical" disabled={!isEditing}>
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[
-            { required: true, message: 'Please enter the task title' },
-            { max: 128, message: 'Title cannot be more than 128 characters long' },
-          ]}
-        >
-          <Input />
-      </Form.Item>
+       
+      </Modal>
 
-      <div className="task-meta">
-            <div>
-              <p>Created At: {formatDate(task.createdAt)}</p>
-            </div>
-            <div>
-              <p>Last Modified At: {formatDate(task.lastModifiedAt)}</p>
-            </div>
-      </div>
-
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ max: 512, message: 'Description cannot be more than 512 characters long' }]}
-        >
-          <Input.TextArea style={{ minHeight: '128px' }} />
-        </Form.Item>
-
-        <Form.Item label="Priority" name="priority">
-          <Select>
-            {priorityOptions.map((option) => (
-              <Option key={option.key} value={option.key}>
-                {option.value}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="Status" name="status">
-          <Select>
-            {statusOptions.map((option) => (
-              <Option key={option.key} value={option.key}>
-                {option.value}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="Due Date" name="dueDate">
-          <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
-        </Form.Item>
-        <div className="task-meta">
-            <div>
-              <p>Started At: {formatDate(task.startedAt)}</p>
-            </div>
-            <div>
-              <p>Completed At: {formatDate(task.completedAt)}</p>
-            </div>
-      </div>
-      </Form>
-    </Modal>
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        visible={showDeleteModal}
+        onClose={handleCloseDeleteModal}
+        taskId={task?.id}
+        onDelete = {onTaskDeleted}
+      />
+    </>
   );
 };
 
-export default TaskDetails;
+export default TaskDetail;

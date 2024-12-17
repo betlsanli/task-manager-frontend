@@ -26,7 +26,6 @@ const ProjectPage = () => {
 
     <div>
       <h1>{details.title}</h1>
-      <p>{details.description}</p>
       <Kanban projectId = {projectId}></Kanban>
     </div>
     

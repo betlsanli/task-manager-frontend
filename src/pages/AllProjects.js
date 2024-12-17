@@ -4,20 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 
-// Sample projects data
-/*
-const projects = [
-  { id: 1, name: 'Project Alpha', lead: 'Alice', description: 'Building a new homepage' },
-  { id: 2, name: 'Project Beta', lead: 'Bob', description: 'Setting up database schema' },
-  { id: 3, name: 'Project Gamma', lead: 'Charlie', description: 'Deploying new feature' },
-  { id: 4, name: 'Project Delta', lead: 'David', description: 'Creating unit tests' },
-  { id: 5, name: 'Project Omega', lead: 'Eve', description: 'Debugging user reports' },
-  { id: 6, name: 'Project Zeta', lead: 'Frank', description: 'Implementing user authentication' },
-  { id: 7, name: 'Project Eta', lead: 'Grace', description: 'Optimizing performance' },
-  { id: 8, name: 'Project Theta', lead: 'Hank', description: 'Setting up CI/CD pipelines' },
 
-];
-*/
 const projects = [
   { id: 1, name: 'Website Redesign', description: 'Redesign the main corporate website for better UX/UI' },
   { id: 2, name: 'Database Migration', description: 'Migrate database infrastructure to AWS' },
@@ -61,7 +48,7 @@ const AllProjects = () => {
       {projects.map((project) => (
         <Link
           key={project.id}
-          to={`/project/${project.id}`}
+          to={`/project-dashboard/${project.id}`}
           style={{
             textDecoration: 'none',
             color: 'inherit',

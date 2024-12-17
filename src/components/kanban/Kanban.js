@@ -4,10 +4,8 @@ import { TaskStatus } from './types.js';
 import './Kanban.css';
 import { DndContext } from '@dnd-kit/core';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid package
-//import TaskModal from './taskcard/TaskModal'; 
 import axios from 'axios';
 import TaskCreator from './taskCreator/TaskCreator.js';
-
 
 
 const columns = [
@@ -34,6 +32,7 @@ const Kanban = ({projectId}) => {
     }
   }, [projectId]);
 
+  
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     if (!over) return;
@@ -43,31 +42,35 @@ const Kanban = ({projectId}) => {
   
     const taskToUpdate = tasks.find((task) => task.id === taskId);
     if (!taskToUpdate || taskToUpdate.status === newStatus) return;
+
   
     // Optimistically update the UI
+    const updatedTask = {
+      ...taskToUpdate,
+      status: newStatus,
+      startedAt: newStatus === TaskStatus.TO_DO ? null: 
+      newStatus === TaskStatus.IN_PROGRESS ? new Date().toISOString() : taskToUpdate.startedAt,
+      completedAt: newStatus === TaskStatus.TO_DO || newStatus === TaskStatus.IN_PROGRESS
+      ? null
+      :newStatus === TaskStatus.DONE ? new Date().toISOString() : taskToUpdate.completedAt,
+    };
+  
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === taskId
-          ? { ...task, status: newStatus }
-          : task
+        task.id === taskId ? updatedTask : task
       )
     );
   
     try {
-      // Save the updated status to the backend
-      await axios.put(`/task/edit/${taskId}`, {
-        ...taskToUpdate,
-        status: newStatus, // Update the status
-      });
+      // Save the updated status and timestamps to the backend
+      await axios.put(`/task/edit/${taskId}`, updatedTask);
     } catch (error) {
       console.error('Error updating task status:', error);
   
       // Rollback the change if the request fails
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === taskId
-            ? { ...task, status: taskToUpdate.status } // Revert to the old status
-            : task
+          task.id === taskId ? taskToUpdate : task
         )
       );
     }
@@ -88,6 +91,11 @@ const Kanban = ({projectId}) => {
     );
   };
 
+  const deleteTask = (taskId) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  }
+
+
   return (
     <div className="kanban-container">
       <button
@@ -104,6 +112,8 @@ const Kanban = ({projectId}) => {
               column={column}
               tasks={tasks.filter((task) => task.status === column.id)}
               onUpdateTask={handleUpdateTask}
+              handleDeleteTask = {deleteTask}
+
             />
           ))}
         </DndContext>

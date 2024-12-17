@@ -5,7 +5,7 @@ import { AddCircle } from '@mui/icons-material';
 import { useState } from 'react';
 import '../Kanban.css';
 
-export function Column({ column, tasks, onUpdateTask }) {
+export function Column({ column, tasks, onUpdateTask, handleDeleteTask }) {
   const { setNodeRef } = useDroppable({ id: column.id });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -22,6 +22,28 @@ export function Column({ column, tasks, onUpdateTask }) {
   };
 
   const handleSaveTask = (updatedTask) => {
+    const now = new Date();
+
+  //set startedAt or completedAt based on status
+  /*
+    if (updatedTask.status === 'IN_PROGRESS' && !updatedTask.startedAt) {
+      updatedTask.startedAt = now.toISOString(); // Set startedAt date
+    } 
+    else if (updatedTask.status === 'DONE' && !updatedTask.completedAt) {
+      updatedTask.completedAt = now.toISOString(); // Set completedAt date
+    }
+    */
+    if (updatedTask.status === 'IN_PROGRESS') {
+      updatedTask.startedAt = updatedTask.startedAt || now.toISOString();
+      updatedTask.completedAt = null;
+    } 
+    else if (updatedTask.status === 'DONE') {
+      updatedTask.completedAt = updatedTask.completedAt || now.toISOString();
+    } 
+    else if (updatedTask.status === 'TO_DO') {
+      updatedTask.startedAt = null;
+      updatedTask.completedAt = null;
+    }
     onUpdateTask(updatedTask); // Update task in parent state
     setSelectedTask(null); // Close the modal
   };
@@ -29,6 +51,8 @@ export function Column({ column, tasks, onUpdateTask }) {
   const handleCloseModal = () => {
     setSelectedTask(null);
   };
+
+  
 
   return (
     <div ref={setNodeRef} className="column-container">
@@ -43,6 +67,7 @@ export function Column({ column, tasks, onUpdateTask }) {
           task={selectedTask}
           onClose={handleCloseModal}
           onSave={handleSaveTask}
+          handleDeleteTask={handleDeleteTask}
         />
       )}
 

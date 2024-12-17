@@ -2,30 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Box, Paper, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import axios from "axios";
+import TaskDetails from "../kanban/taskDetail/TaskDetail.js"; // Adjust the import path as necessary
 
-/*
-  // Sample data
-  const projects = [
-    { id: 1, name: 'Project Alpha', lead: 'Alice' },
-    { id: 2, name: 'Project Beta', lead: 'Bob' },
-    { id: 3, name: 'Project Gamma', lead: 'Charlie' },
-    { id: 4, name: 'Project Delta', lead: 'David' },
-    { id: 5, name: 'Project Omega', lead: 'Eve' },
 
-  ];
-  
-  const tasks = [
-    { id: 1, name: 'Design Homepage', status: 'TO_DO', project: 'Project Alpha' },
-    { id: 2, name: 'Setup Database', status: 'IN_PROGRESS', project: 'Project Beta' },
-    { id: 3, name: 'Deploy App', status: 'DONE', project: 'Project Gamma' },
-    { id: 4, name: 'Write Unit Tests', status: 'TO_DO', project: 'Project Delta' },
-    { id: 5, name: 'Fix Bugs', status: 'IN_PROGRESS', project: 'Project Omega' },
-    { id: 6, name: 'Design Homepage', status: 'TO_DO', project: 'Project Alpha' },
-    { id: 7, name: 'Setup Database', status: 'IN_PROGRESS', project: 'Project Beta' },
-    { id: 8, name: 'Deploy App', status: 'DONE', project: 'Project Gamma' },
-    
-];
-  */
   // Status colors
   const statusColors = {
     TO_DO: '#D170EB',
@@ -38,84 +17,28 @@ import axios from "axios";
     IN_PROGRESS: 'In Progress',
     DONE: 'Done',
   };
+
+  const priorityColors = {
+    LOW: '#8FD849',
+    MEDIUM: '#F1F44A',
+    HIGH: '#F16022',
+    CRITICAL: '#E91111',
+  };
+  
+  const priorityLabels = {
+    LOW: 'Low',
+    MEDIUM: 'Medium',
+    HIGH: 'High',
+    CRITICAL: 'Critical',
+  };
+  
   
 const Dashboard = () => {
-    /*
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedTask, setSelectedTask] = useState(null);
-  
-    const handleTaskClick = (task) => {
-      setSelectedTask(task);
-      setModalOpen(true);
-    };
-  
-    const handleCloseModal = () => {
-      setModalOpen(false);
-      setSelectedTask(null);
-    };
-    */
-    /*
-  const projects = [
-    { id: 1, name: 'Project 1', lead: 'Alice' },
-    { id: 2, name: 'Project 2', lead: 'Bob' },
-    { id: 3, name: 'Project 3', lead: 'Charlie' },
-  ];
-
-  const tasks = [
-    { id: 1, name: 'Task 1', project: 'Project 1' },
-    { id: 2, name: 'Task 2', project: 'Project 2' },
-    { id: 3, name: 'Task 3', project: 'Project 3' },
-  ];
-  */
+    
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
-
-
-  /*
-  // Fetch user data dynamically from backend
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("/api/users"); // Adjust endpoint to backend's user fetch URL
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Fetch project data dynamically from backend
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get("/api/projects");
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Error fetching project data", error);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  // Fetch tasks dynamically from backend
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get("/api/tasks");
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching task data", error);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-  */
+  const [selectedTask, setSelectedTask] = useState(null); // Selected task for the modal
 
   useEffect(() => {
     // Simulate fetching users
@@ -140,6 +63,28 @@ const Dashboard = () => {
 
   }, []);
 
+  const handleTaskClick = (task) => {
+    setSelectedTask(task); // Set the selected task for the modal
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTask(null); // Close the modal
+  };
+
+  const handleSaveTask = (updatedTask) => {
+    // Update task in the backend
+    axios.put(`/task/edit/${updatedTask.id}`, updatedTask)
+      .then((response) => {
+        const updatedTasks = tasks.map((task) =>
+          task.id === response.data.id ? response.data : task
+        );
+        setTasks(updatedTasks); // Update task in the state
+        setSelectedTask(null); // Close the modal
+      })
+      .catch((error) => {
+        console.error('Failed to update task:', error);
+      });
+  };
 
   return (
     <Box
@@ -176,7 +121,7 @@ const Dashboard = () => {
         {projects.slice(0, 5).map((project) => (
           <Link
             key={project.id}
-            to={`/project/${project.id}`}
+            to={`/project-dashboard/${project.id}`}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <Box
@@ -223,6 +168,8 @@ const Dashboard = () => {
         {tasks.slice(0,3).map((task) => (
           <Paper
             key={task.id}
+            onClick={() => handleTaskClick(task)} // Open task modal on click
+
             sx={{
               padding: 2,
               mb: 2,
@@ -235,13 +182,14 @@ const Dashboard = () => {
                 backgroundColor: '#424242',
               },
             }}
+
           >
             <Typography variant="h6">{task.title}</Typography>
             <Typography variant="body2" color="textSecondary" mb={1}>
               Project: {task.project}
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={1}>
-              Priority: {task.priority}
+              Priority: {priorityLabels[task.priority]}
             </Typography>
             <Typography variant="body2" color="textSecondary" mb={1}>
               Status: {statusLabels[task.status]}
@@ -257,74 +205,26 @@ const Dashboard = () => {
                 height: 12,
                 width: 12,
                 borderRadius: '50%',
-                backgroundColor: statusColors[task.status],
+                backgroundColor: priorityColors[task.priority],
               }}
             />
           </Paper>
         ))}
       </Box>
+      {/* Task Details Modal */}
+      {selectedTask && (
+        <TaskDetails
+          visible={!!selectedTask}
+          task={selectedTask}
+          onClose={handleCloseModal}
+          onSave={handleSaveTask}
+        />
+      )}
+    
     </Box>
 
-    // <Box padding={3} display="flex" flexDirection="column" gap={3}>
-    //   {/* Projects Section */}
-    //   <Box>
-    //     <Typography variant="h5">My Projects</Typography>
-    //     <Box display="flex" gap={2} flexWrap="wrap">
-    //       {projects.slice(0, 5).map((project) => (
-    //         <Link
-    //           key={project.id}
-    //           to={`/project/${project.id}`}
-    //           style={{ textDecoration: 'none', color: 'inherit' }}
-    //         >
-    //           <Paper
-    //             sx={{
-    //               padding: 2,
-    //               flex: '1 1 calc(33.333% - 16px)',
-    //               minWidth: 250,
-    //               cursor: 'pointer',
-    //               '&:hover': {
-    //                 backgroundColor: '#f0f0f0',
-    //               },
-    //             }}
-    //           >
-    //             <Typography variant="h6">{project.name}</Typography>
-    //             <Typography variant="body2">Lead: {project.lead}</Typography>
-    //           </Paper>
-    //         </Link>
-    //       ))}
-    //     </Box>
-    //     <Button component={Link} to="/projects" sx={{ marginTop: 2 }}>
-    //       Show All Projects
-    //     </Button>
-    //   </Box>
 
-    //   {/* Tasks Section */}
-    //   <Box>
-    //     <Typography variant="h5">Assigned Tasks</Typography>
-    //     <Box display="flex" gap={2} flexWrap="wrap">
-    //       {tasks.slice(0, 10).map((task) => (
-    //         <Paper
-    //           key={task.id}
-    //           sx={{
-    //             padding: 2,
-    //             flex: '1 1 calc(33.333% - 16px)',
-    //             minWidth: 250,
-    //             cursor: 'pointer',
-    //             '&:hover': {
-    //               backgroundColor: '#f0f0f0',
-    //             },
-    //           }}
-    //         >
-    //           <Typography variant="h6">{task.name}</Typography>
-    //           <Typography variant="body2">Project: {task.project}</Typography>
-    //         </Paper>
-    //       ))}
-    //     </Box>
-    //     <Button component={Link} to="/tasks" sx={{ marginTop: 2 }}>
-    //       Show All Tasks
-    //     </Button>
-    //   </Box>
-    // </Box>
+  
   );
 };
 

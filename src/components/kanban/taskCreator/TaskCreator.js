@@ -9,11 +9,15 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
   const [form] = Form.useForm();
 
   const handleFinish = (values) => {
+    const now = new Date().toISOString();
+
     const newTask = {
       ...values,
       projectId,
       dueDate: values.dueDate ? values.dueDate.toISOString() : null,
       assignees: [],
+      startedAt: values.status === 'IN_PROGRESS' ? now : null,
+      completedAt: values.status === 'DONE' ? now : null,
     };
 
     axios.post('/task/create-task', newTask)

@@ -45,6 +45,9 @@ export function TaskCard({ task, onDoubleClick }) {
       </p>
       <p className="task-priority">Priority: {task.priority}</p>
       <p className="task-due-date">Due: {formattedDueDate}</p>
+      {/* <p className="task-started-at">Started At: {task.startedAt ? new Date(task.startedAt).toLocaleString() : 'Not started'}</p>
+      <p className="task-completed-at">Completed At: {task.completedAt ? new Date(task.completedAt).toLocaleString() : 'Not completed'}</p> */}
+
     </div>
   );
 }

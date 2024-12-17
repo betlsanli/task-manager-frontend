@@ -42,3 +42,15 @@
     background-color: #ffffff !important;
     color: black !important;
   }
+
+  /* Add custom danger button styling */
+.ant-btn-danger {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: white !important;
+}
+
+.ant-btn-danger:hover {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+}

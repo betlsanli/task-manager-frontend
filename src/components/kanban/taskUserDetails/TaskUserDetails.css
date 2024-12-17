@@ -1,0 +1,6 @@
+.drawer-header-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: end;
+    align-items: center;
+  }

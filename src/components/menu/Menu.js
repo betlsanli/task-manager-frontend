@@ -141,7 +141,7 @@ function Menu() {
           {sampleProjects.map((project) => (
             <MenuItem
               key={project.id}
-              onClick={() => handleNavigate(`/project/${project.id}`, setProjectAnchor)}
+              onClick={() => handleNavigate(`/project-dashboard/${project.id}`, setProjectAnchor)}
             >
               {project.name}
             </MenuItem>
