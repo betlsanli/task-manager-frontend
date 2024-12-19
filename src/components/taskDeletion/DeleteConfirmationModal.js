@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'antd';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 
 const DeleteConfirmationModal = ({ visible, onClose, taskId, onDelete }) => {
   const [loading, setLoading] = useState(false);
@@ -8,7 +8,7 @@ const DeleteConfirmationModal = ({ visible, onClose, taskId, onDelete }) => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`/task/delete/${taskId}`);
+      await axiosInstance.delete(`/task/delete/${taskId}`);
       onClose();
       onDelete(taskId);
     } catch (error) {

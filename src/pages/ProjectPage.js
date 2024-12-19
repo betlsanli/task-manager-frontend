@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Kanban from '../components/kanban/Kanban';
 import { Box, Typography } from '@mui/material';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
 
 
@@ -13,7 +13,7 @@ const ProjectPage = () => {
   useEffect(() => {
     if (!projectId) return;
     try {
-      axios.get(`/project/${projectId}`)
+      axiosInstance.get(`/project/${projectId}`)
       .then((response) => setDetails(response.data))
       .catch((error) => console.error('Error fetching project:', error));
       

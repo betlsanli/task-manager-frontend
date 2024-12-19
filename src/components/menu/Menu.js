@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, IconButton, Menu as MuiMenu, MenuItem, Typography, TextField, InputAdornment, Avatar, Box, Button, Divider } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import axiosInstance from '../../axiosInstance';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -87,11 +88,29 @@ const sampleProjects = [
   },
 ];
 
-function Menu() {
+function Menu({onLogout}) {
 
   const [projectAnchor, setProjectAnchor] = useState(null);
   const [teamAnchor, setTeamAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null)
+
+  useEffect(() => {
+    try {
+      axiosInstance.get(`/user/profile`)
+        .then((response) => {
+          const userData = response.data;
+          setCurrentUser(userData);
+
+          // Update localStorage after setting state
+          localStorage.setItem('user', JSON.stringify(userData));
+        })
+        .catch((error) => console.error('Error fetching profile:', error));
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  }, []);
+
 
   const navigate = useNavigate();
 
@@ -104,8 +123,12 @@ function Menu() {
     navigate(path);
   };
 
-  const currentUser = sampleUsers.find(user => user.id === 2); // Fetch user data dynamically
-
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    onLogout() // Clear session
+    navigate('/login'); // Redirect to login page
+  };
 
   return (
     <AppBar position="static" sx={{ backgroundColor: 'primary.dark' }}>
@@ -241,12 +264,12 @@ function Menu() {
                 <Typography variant="subtitle2">Email: {currentUser.email}</Typography>
               </MenuItem>
               <MenuItem style={{ pointerEvents: 'none' }}>
-                <Typography variant="subtitle2">Role: {currentUser.role}</Typography>
+                <Typography variant="subtitle2">Role: {currentUser.isAdmin ? "Admin" : "User"}</Typography>
               </MenuItem>
             </>
           )}
           <Divider />
-          <MenuItem onClick={() => console.log('Logging out')}>Logout</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </MuiMenu>
       </Toolbar>
     </AppBar>

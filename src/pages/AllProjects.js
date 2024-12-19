@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'; // Ensure hooks are imported
 import { Box, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 
 

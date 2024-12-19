@@ -1,10 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppRoutes from './routes';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
-import Header from './components/header/Header';
-import HomePage from './pages/HomePage';
-import ProjectPage from './pages/ProjectPage';
+
 
 const theme = createTheme({
   palette: {
@@ -91,25 +88,13 @@ const whiteTheme = createTheme({
 
 function App() {
   return (
-    
+
+
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <AppRoutes></AppRoutes>
     </ThemeProvider>
     
-
-    /*
-    <ThemeProvider theme={theme}>
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/project/:projectId" element={<ProjectPage />} />
-        
-      </Routes>
-    </Router>
-  </ThemeProvider>
-  */
   );
 }
 

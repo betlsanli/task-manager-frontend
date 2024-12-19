@@ -4,7 +4,7 @@ import { TaskStatus } from './types.js';
 import './Kanban.css';
 import { DndContext } from '@dnd-kit/core';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid package
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import TaskCreator from './taskCreator/TaskCreator.js';
 
 
@@ -23,7 +23,7 @@ const Kanban = ({projectId}) => {
   useEffect(() => {
     if (!projectId) return;
     try {
-      axios.get(`/task/of-project/${projectId}`)
+      axiosInstance.get(`/task/of-project/${projectId}`)
       .then((response) => setTasks(response.data))
       .catch((error) => console.error('Error fetching tasks:', error));
 
@@ -63,7 +63,7 @@ const Kanban = ({projectId}) => {
   
     try {
       // Save the updated status and timestamps to the backend
-      await axios.put(`/task/edit/${taskId}`, updatedTask);
+      await axiosInstance.put(`/task/edit/${taskId}`, updatedTask);
     } catch (error) {
       console.error('Error updating task status:', error);
   

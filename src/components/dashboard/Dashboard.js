@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Paper, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
-import axios from "axios";
+import axiosInstance from "../../axiosInstance.js";
 import TaskDetails from "../kanban/taskDetail/TaskDetail.js"; // Adjust the import path as necessary
 
 
@@ -49,13 +49,13 @@ const Dashboard = () => {
     setUsers(sampleUsers);
 
     try {
-      axios.get('/project/all-project')
+      axiosInstance.get('/project/all-project')
         .then((response) => setProjects(response.data))
         .catch((error) => console.error('Error fetching projects:', error));
     } catch (error) { console.error('Error fetching projects:', error); }
 
     try {
-      axios.get('/task/all-task')
+      axiosInstance.get('/task/all-task')
         .then((response) => setTasks(response.data))
         .catch((error) => console.error('Error fetching tasks:', error));
     } catch (error) { console.error('Error fetching tasks:', error); }
@@ -73,7 +73,7 @@ const Dashboard = () => {
 
   const handleSaveTask = (updatedTask) => {
     // Update task in the backend
-    axios.put(`/task/edit/${updatedTask.id}`, updatedTask)
+    axiosInstance.put(`/task/edit/${updatedTask.id}`, updatedTask)
       .then((response) => {
         const updatedTasks = tasks.map((task) =>
           task.id === response.data.id ? response.data : task

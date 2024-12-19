@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Button, DatePicker, Select } from 'antd';
-import axios from 'axios';
+import axiosInstance from '../../../axiosInstance';
 
 
 const { Option } = Select;
@@ -20,7 +20,7 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
       completedAt: values.status === 'DONE' ? now : null,
     };
 
-    axios.post('/task/create-task', newTask)
+    axiosInstance.post('/task/create-task', newTask)
       .then(response => {
         console.log('Task created successfully:', response.data);
         addNewTaskToProject(response.data);

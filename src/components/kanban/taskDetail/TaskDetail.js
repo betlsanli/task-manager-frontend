@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Avatar, Tabs, Button, Input, DatePicker, Select, Form } from 'antd';
 import dayjs from 'dayjs';
-import axios from 'axios';
+import axiosInstance from '../../../axiosInstance';
 import './TaskDetail.css';
 import TaskUserDetails from '../taskUserDetails/TaskUserDetails';
 import DeleteConfirmationModal from '../../taskDeletion/DeleteConfirmationModal';
@@ -65,7 +65,7 @@ const TaskDetail = ({ visible, task, onClose, onSave, handleDeleteTask}) => {
       updatedTask.completedAt = updatedTask.completedAt || now; // Define completedAt if not already set
     }
 
-      axios
+      axiosInstance
         .put(`/task/edit/${task.id}`, updatedTask)
         .then((response) => {
           onSave(response.data); // Pass updated task to parent

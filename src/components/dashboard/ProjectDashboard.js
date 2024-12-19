@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 
 function ProjectDashboard() {
   const { projectId } = useParams();
@@ -15,7 +15,7 @@ function ProjectDashboard() {
   useEffect(() => {
     if (!projectId) return;
     try {
-      axios.get(`/team/${projectId}`)
+      axiosInstance.get(`/team/${projectId}`)
       .then((response) => setProjectAssignments(response.data))
       .catch((error) => console.error('Error fetching project assignments:', error));
       
@@ -34,7 +34,7 @@ function ProjectDashboard() {
       completedAt: values.status === 'DONE' ? now : null,
     };
 
-    axios.post('/task/create-task', newTask)
+    axiosInstance.post('/task/create-task', newTask)
       .then(response => {
         console.log('Task created successfully:', response.data);
         addNewTaskToProject(response.data);

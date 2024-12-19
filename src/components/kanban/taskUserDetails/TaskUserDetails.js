@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, List, Button, Select } from 'antd';
-import axios from "axios";
+import axiosInstance from "../../../axiosInstance";
 import './TaskUserDetails.css';
 
 const { Option } = Select;
@@ -14,7 +14,7 @@ const TaskUserDetails = ({ task}) => {
     if (task) {
       setAssigneeList(task.assignees);
 
-      axios.get(`/team/${task.projectId}`)
+      axiosInstance.get(`/team/${task.projectId}`)
       .then(response => {
         setAllUsers(response.data);
       })
@@ -29,7 +29,7 @@ const TaskUserDetails = ({ task}) => {
     const updatedTask = { ...task, assignees: assigneeList };
     console.log("Updating task with:", updatedTask); // Debugging
 
-    axios.put(`/task/edit/${task.id}`, updatedTask)
+    axiosInstance.put(`/task/edit/${task.id}`, updatedTask)
       .then(response => {
         const updatedTaskData = response.data;
         console.log("Task updated successfully:", updatedTaskData); // Debugging
