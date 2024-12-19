@@ -32,7 +32,7 @@ const DeleteConfirmationModal = ({ visible, onClose, url, onDelete }) => {
         </Button>,
       ]}
     >
-      <p>Are you sure you want to delete this project?</p>
+      <p>Are you sure you want to delete this?</p>
     </Modal>
   );
 };

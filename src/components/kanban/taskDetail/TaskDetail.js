@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import axiosInstance from '../../../axiosInstance';
 import './TaskDetail.css';
 import TaskUserDetails from '../taskUserDetails/TaskUserDetails';
-import DeleteConfirmationModal from '../../taskDeletion/DeleteConfirmationModal';
+import DeleteConfirmationModal from '../../DeletionConfirmation/DeleteConfirmationModal';
 
 const { TabPane } = Tabs;
 

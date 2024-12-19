@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Card, Col, Row, Typography, Button, List } from 'antd';
 import axiosInstance from "../../axiosInstance";
-import ProjectModal from '../projectsModal/ProjectsModal'; // Import the modal component
+import ProjectModal from '../projectsModal/ProjectsModal'; 
+import UsersModal from '../usersModal/UsersModal'; 
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -11,6 +12,7 @@ const AdminDashboard = () => {
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalTasks, setTotalTasks] = useState(0);
   const [isProjectModalVisible, setIsProjectModalVisible] = useState(false);
+  const [isUsersModalVisible, setIsUsersModalVisible] = useState(false);
 
   useEffect(() => {
     axiosInstance.get(`/user/get-total-count`)
@@ -38,6 +40,14 @@ const AdminDashboard = () => {
 
   const closeProjectModal = () => {
     setIsProjectModalVisible(false);
+  };
+
+  const showUsersModal = () => {
+    setIsUsersModalVisible(true);
+  };
+
+  const closeUsersModal = () => {
+    setIsUsersModalVisible(false);
   };
 
   return (
@@ -74,7 +84,7 @@ const AdminDashboard = () => {
                 <Card>
                   <Title level={5}>Manage Users</Title>
                   <Text>View, edit, or delete user accounts.</Text>
-                  <Button type="primary" block style={{ marginTop: '10px' }}>
+                  <Button type="primary" block style={{ marginTop: '10px' }} onClick={showUsersModal}>
                     Manage Users
                   </Button>
                 </Card>
@@ -118,6 +128,12 @@ const AdminDashboard = () => {
           <ProjectModal
             visible={isProjectModalVisible}
             onClose={closeProjectModal}
+          />
+
+          {/* Open the Users Modal */}
+          <UsersModal
+            visible={isUsersModalVisible}
+            onClose={closeUsersModal}
           />
         </Content>
       </Layout>

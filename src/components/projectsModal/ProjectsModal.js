@@ -4,7 +4,6 @@ import { Modal, Table, Input, Button, Space, Typography, Form, message } from 'a
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import axiosInstance from "../../axiosInstance";
 import DeleteConfirmationModal from '../DeletionConfirmation/DeleteConfirmationModal';
-import ProjectDashboard from '../dashboard/ProjectDashboard'
 
 const { Text } = Typography;
 

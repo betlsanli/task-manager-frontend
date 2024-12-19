@@ -44,6 +44,7 @@ const AppRoutes = () => {
           <Route path="project-kanban/:projectId" element={loggedIn ? <ProjectPage /> : <Navigate to="/login" />} />
           <Route path="tasks" element={loggedIn ? <AllTasks /> : <Navigate to="/login" />} />
           <Route path="teams" element={loggedIn ? <AllTeams /> : <Navigate to="/login" />} />
+          <Route path="user-profile/:userId" element={loggedIn ? <ProjectPage /> : <Navigate to="/login" />} />
         </Route>
 
         {/* Login Route */}
