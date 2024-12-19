@@ -206,7 +206,7 @@ const TaskDetail = ({ visible, task, onClose, onSave, handleDeleteTask}) => {
       <DeleteConfirmationModal
         visible={showDeleteModal}
         onClose={handleCloseDeleteModal}
-        taskId={task?.id}
+        url={`/task/delete/${task?.id}`}
         onDelete = {onTaskDeleted}
       />
     </>

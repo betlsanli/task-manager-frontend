@@ -1,44 +1,48 @@
-import React, {useState, useEffect} from 'react';
-import { Layout, Card, Col, Row, Typography, List, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Card, Col, Row, Typography, Button, List } from 'antd';
 import axiosInstance from "../../axiosInstance";
+import ProjectModal from '../projectsModal/ProjectsModal'; // Import the modal component
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const AdminDashboard = () => {
-  const [totalUsers, setTotalUsers] = useState(0)
-  const [totalProjects, setTotalProjects] = useState(0)
-  const [totalTasks, setTotalTasks] = useState(0)
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalTasks, setTotalTasks] = useState(0);
+  const [isProjectModalVisible, setIsProjectModalVisible] = useState(false);
 
-  useEffect (() => {
-    try {
-      axiosInstance.get(`/user/get-total-count`)
-        .then((response) => {
-          setTotalUsers(response.data);
-        })
-        .catch((error) => console.error('Error fetching total count of users:', error));
+  useEffect(() => {
+    axiosInstance.get(`/user/get-total-count`)
+      .then((response) => {
+        setTotalUsers(response.data);
+      })
+      .catch((error) => console.error('Error fetching total count of users:', error));
 
-      axiosInstance.get(`/project/get-total-count`)
-        .then((response) => {
-          setTotalProjects(response.data);
-        })
-        .catch((error) => console.error('Error fetching total counts of projects:', error))
+    axiosInstance.get(`/project/get-total-count`)
+      .then((response) => {
+        setTotalProjects(response.data);
+      })
+      .catch((error) => console.error('Error fetching total counts of projects:', error));
 
-        axiosInstance.get(`/task/get-total-count`)
-        .then((response) => {
-          setTotalTasks(response.data);
-        })
-        .catch((error) => console.error('Error fetching total counts of tasks:', error))
-    } catch (error) {
-      console.error('Error fetching total counts:', error);
-    }
-  },[]);
+    axiosInstance.get(`/task/get-total-count`)
+      .then((response) => {
+        setTotalTasks(response.data);
+      })
+      .catch((error) => console.error('Error fetching total counts of tasks:', error));
+  }, []);
+
+  const showProjectModal = () => {
+    setIsProjectModalVisible(true);
+  };
+
+  const closeProjectModal = () => {
+    setIsProjectModalVisible(false);
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      
       <Layout>
-        {/* Main Content */}
         <Content style={{ margin: '16px' }}>
           {/* Statistics Cards */}
           <Row gutter={16}>
@@ -71,7 +75,7 @@ const AdminDashboard = () => {
                   <Title level={5}>Manage Users</Title>
                   <Text>View, edit, or delete user accounts.</Text>
                   <Button type="primary" block style={{ marginTop: '10px' }}>
-                    Go
+                    Manage Users
                   </Button>
                 </Card>
               </Col>
@@ -79,8 +83,8 @@ const AdminDashboard = () => {
                 <Card>
                   <Title level={5}>Manage Projects</Title>
                   <Text>View, edit, or delete projects and tasks.</Text>
-                  <Button type="primary" block style={{ marginTop: '10px' }}>
-                    Go
+                  <Button type="primary" block style={{ marginTop: '10px' }} onClick={showProjectModal}>
+                    Manage Projects
                   </Button>
                 </Card>
               </Col>
@@ -109,6 +113,12 @@ const AdminDashboard = () => {
               renderItem={(item) => <List.Item>{item}</List.Item>}
             />
           </div>
+
+          {/* Open the Project Modal */}
+          <ProjectModal
+            visible={isProjectModalVisible}
+            onClose={closeProjectModal}
+          />
         </Content>
       </Layout>
     </Layout>
