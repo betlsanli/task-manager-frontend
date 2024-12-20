@@ -1,77 +1,308 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Typography, Box } from '@mui/material';
+import { Layout, Row, Col, Card, Typography, Spin, Button, Progress, Form, Input, message } from 'antd';
+import { Pie } from 'react-chartjs-2';
 import axiosInstance from '../../axiosInstance';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import dayjs from 'dayjs';
 
-function ProjectDashboard() {
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const { Title, Text } = Typography;
+const { Content } = Layout;
+
+const formatDate = (date) => (date ? dayjs(date).format('YYYY-MM-DD HH:mm') : 'N/A');
+
+const ProjectDashboard = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const [projectAssignments, setProjectAssignments] = useState([]);
-
-  const handleGoToKanban = () => {
-    navigate(`/project-kanban/${projectId}`);
-  };
+  const [project, setProject] = useState(null);
+  const [taskStats, setTaskStats] = useState(null);
+  const [priorityStats, setPriorityStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [totalTaskCount, setTotalTaskCount] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    if (!projectId) return;
-    try {
-      axiosInstance.get(`/team/${projectId}`)
-      .then((response) => setProjectAssignments(response.data))
-      .catch((error) => console.error('Error fetching project assignments:', error));
-      
-    } catch (error) {
-      console.error('Error fetching project assignments:', error);
-    }
-  }, [projectId]);
-
-/*   const handleAddUsers = () => {
-    const newAssignment = {
-      ...values,
-      projectId,
-      dueDate: values.dueDate ? values.dueDate.toISOString() : null,
-      assignees: [],
-      startedAt: values.status === 'IN_PROGRESS' ? now : null,
-      completedAt: values.status === 'DONE' ? now : null,
-    };
-
-    axiosInstance.post('/task/create-task', newTask)
-      .then(response => {
-        console.log('Task created successfully:', response.data);
-        addNewTaskToProject(response.data);
-        onClose();
-        form.resetFields();
+    // Fetch project details
+    axiosInstance
+      .get(`/project/${projectId}`)
+      .then((response) => {
+        setProject(response.data);
+        form.setFieldsValue({ title: response.data.title, description: response.data.description });
       })
-      .catch(error => {
-        console.error('Failed to create task', error);
+      .catch((error) => {
+        console.error('Error fetching project details:', error);
       });
-  }  */
+
+    // Fetch task statistics
+    axiosInstance
+      .get(`/task/status-stats/${projectId}`)
+      .then((response) => {
+        setTaskStats(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching task stats:', error);
+      });
+
+    // Fetch task priority statistics
+    axiosInstance
+      .get(`/task/priority-stats/${projectId}`)
+      .then((response) => {
+        setPriorityStats(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching task priority stats:', error);
+      });
+
+    // Fetch total task count
+    axiosInstance
+      .get(`/task/get-total-count/${projectId}`)
+      .then((response) => {
+        setTotalTaskCount(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching total task count:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    // Check if the user is an admin
+    if (user.isAdmin) {
+      setIsEditable(true); // Allow editing if the user is an admin
+    } else {
+      // Fetch the user's role for this specific project
+      axiosInstance
+        .get(`/team/get-role/${projectId}`)
+        .then((response) => {
+          const roles = response.data;
+          // Check if the user is a manager for the project
+          if (roles.includes('MANAGER')) {
+            setIsEditable(true);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user roles:', error);
+        });
+    }
+  }, [projectId, form]);
+
+  const handleSubmit = (values) => {
+    const updatedProject = { title: values.title, description: values.description };
+    axiosInstance
+      .put(`/project/edit/${projectId}`, updatedProject)
+      .then((response) => {
+        message.success('Project updated successfully');
+        setProject(response.data);
+        setIsEditMode(false); // Exit edit mode after successful update
+      })
+      .catch((error) => {
+        message.error('Error updating project');
+        console.error('Error updating project:', error);
+      });
+  };
+
+  const handleCancel = () => {
+    form.setFieldsValue({ title: project?.title, description: project?.description });
+    setIsEditMode(false); // Exit edit mode when canceled
+  };
+
+  const statusChartData = {
+    labels: taskStats ? taskStats.map((stat) => stat.status) : [],
+    datasets: [
+      {
+        label: 'Task Status Distribution',
+        data: taskStats ? taskStats.map((stat) => stat.count) : [],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+  const priorityChartData = {
+    labels: priorityStats ? priorityStats.map((stat) => stat.priority) : [],
+    datasets: [
+      {
+        label: 'Task Priority Distribution',
+        data: priorityStats ? priorityStats.map((stat) => stat.count) : [],
+        backgroundColor: ['#4BC0C0', '#FF9F40', '#FFCD56', '#FF6384'],
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+  const calculateProgress = () => {
+    if (!taskStats) return 0;
+
+    const doneTasks = taskStats.find((stat) => stat.status === 'DONE')?.count || 0;
+    const totalTasks = taskStats.reduce((acc, stat) => acc + stat.count, 0);
+
+    return totalTasks === 0 ? 0 : (doneTasks / totalTasks) * 100;
+  };
+
+  const progressPercentage = calculateProgress();
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Project Dashboard
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        Current Project ID: {projectId}
-      </Typography>
-      
-      {/* Example content */}
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="body1">Here, you can view general information about the project.</Typography>
-      </Box>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Content style={{ padding: '20px', background: '#fff' }}>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Card>
+              {loading ? (
+                <Spin tip="Loading..." />
+              ) : (
+                <>
+                  <Title level={4}>
+                    
+                      <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleSubmit}
+                        initialValues={{ title: project?.title, description: project?.description }}
+                      >
+                        <Form.Item
+                          name="title"
+                          label="Project Title"
+                          rules={[{ required: true, message: 'Please input the project title!' }]}
+                        >
+                          <Input autoFocus disabled={!isEditMode} />
+                        </Form.Item>
 
-      {/* Button to go to Kanban */}
-      <Box sx={{ mt: 4 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleGoToKanban}
-        >
-          Go to Kanban Board
-        </Button>
-      </Box>
-    </Box>
+                        <Form.Item
+                          name="description"
+                          label="Project Description"
+                          rules={[{ required: true, message: 'Please input the project description!' }]}
+                        >
+                          <Input.TextArea disabled={!isEditMode} />
+                        </Form.Item>
+
+                        <div className="task-meta">
+                          <div>
+                            <p>Created At: {formatDate(project?.createdAt)}</p>
+                          </div>
+                          <div>
+                            <p>Last Modified At: {formatDate(project?.lastModifiedAt)}</p>
+                          </div>
+                        </div>
+
+                        {isEditable && (
+                          <div style={{ marginTop: '20px' }}>
+                            {!isEditMode ? (
+                              <Button
+                                type="primary"
+                                onClick={() => setIsEditMode(true)} // Allow editing
+                              >
+                                Edit
+                              </Button>
+                            ) : (
+                              <div>
+                                <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                                  Save
+                                </Button>
+                                <Button onClick={handleCancel}>Cancel</Button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Form>                    
+                  </Title>
+                  
+                </>
+              )}
+            </Card>
+          </Col>
+
+          {/* Progress Bar for task completion with percentage */}
+          <Col span={24}>
+            {loading ? (
+              <Spin tip="Loading task progress..." />
+            ) : (
+              <>
+                <div style={{ marginBottom: '10px', fontSize: '16px', fontWeight: 'bold' }}>
+                  {`Progress: ${progressPercentage.toFixed(2)}%`}
+                </div>
+                <Progress
+                  percent={progressPercentage}
+                  status="active"
+                  showInfo={false}
+                  strokeColor="#4BC0C0"
+                  style={{ marginBottom: '20px' }}
+                />
+              </>
+            )}
+          </Col>
+
+          {/* Task Status Pie Chart */}
+          <Col span={6}>
+            <Card>
+              {loading ? (
+                <Spin tip="Loading Task Status Stats..." />
+              ) : (
+                <>
+                  <Title level={4}>Task Status Stats</Title>
+                  <div style={{ height: '300px', width: '300px' }}>
+                    <Pie data={statusChartData} height={300} width={300} />
+                  </div>
+                </>
+              )}
+            </Card>
+          </Col>
+
+          {/* Task Priority Pie Chart */}
+          <Col span={6}>
+            <Card>
+              {loading ? (
+                <Spin tip="Loading Task Priority Stats..." />
+              ) : (
+                <>
+                  <Title level={4}>Task Priority Stats</Title>
+                  <div style={{ height: '300px', width: '300px' }}>
+                    <Pie data={priorityChartData} height={300} width={300} />
+                  </div>
+                </>
+              )}
+            </Card>
+          </Col>
+
+          <Col span={12}>
+            <Card style={{ marginBottom: '20px' }}>
+              {loading ? (
+                <Spin tip="Loading Total Task Count..." />
+              ) : (
+                <>
+                  <Title level={4}>Total Task Count</Title>
+                  <Text>{totalTaskCount !== null ? totalTaskCount : 'N/A'}</Text>
+
+                  {/* Button below the total task count */}
+                  <div style={{ marginTop: '20px' }}>
+                    <Button
+                      type="primary"
+                      onClick={() => navigate(`/project-kanban/${projectId}`)}
+                      style={{ width: '100%' }}
+                    >
+                      Go to Kanban Board
+                    </Button>
+                  </div>
+                </>
+              )}
+            </Card>
+
+            {/* Assigned Users below the button */}
+            <Card style={{ marginTop: '20px' }}>
+              <div>
+                <Title level={4}>Assigned Users</Title>
+                <Text>No users assigned yet</Text>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </Content>
+    </Layout>
   );
-}
+};
 
 export default ProjectDashboard;
