@@ -244,17 +244,6 @@ function Menu({onLogout}) {
           disableScrollLock={true} // <-- Prevents the scroll from being locked
 
         >
-          {/* <MenuItem style={{ pointerEvents: 'none' }}>
-            <Typography variant="subtitle1">Username: {sampleUserData.username}</Typography>
-          </MenuItem>
-          <MenuItem style={{ pointerEvents: 'none' }}>
-            <Typography variant="subtitle2">Email: {sampleUserData.email}</Typography>
-          </MenuItem>
-          <MenuItem style={{ pointerEvents: 'none' }}>
-            <Typography variant="subtitle2">Role: {sampleUserData.role}</Typography>
-          </MenuItem>
-          <MenuItem onClick={() => console.log('Logging out')}>Logout</MenuItem>
-        </MuiMenu> */}
         {currentUser && (
             <>
               <MenuItem style={{ pointerEvents: 'none' }}>
@@ -269,6 +258,9 @@ function Menu({onLogout}) {
             </>
           )}
           <Divider />
+          <MenuItem onClick={() => { navigate(`/user-profile/${currentUser.userId}`) }}>
+            Settings
+          </MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </MuiMenu>
       </Toolbar>

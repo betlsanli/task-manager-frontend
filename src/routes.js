@@ -9,6 +9,7 @@ import AllTeams from './pages/AllTeams';
 import RegisterPage from './pages/RegisterPage';
 import ProjectDashboard from './components/dashboard/ProjectDashboard';
 import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
 
 const AppRoutes = () => {
   const [loggedIn, setLoggedIn] = useState(null);
@@ -44,7 +45,7 @@ const AppRoutes = () => {
           <Route path="project-kanban/:projectId" element={loggedIn ? <ProjectPage /> : <Navigate to="/login" />} />
           <Route path="tasks" element={loggedIn ? <AllTasks /> : <Navigate to="/login" />} />
           <Route path="teams" element={loggedIn ? <AllTeams /> : <Navigate to="/login" />} />
-          <Route path="user-profile/:userId" element={loggedIn ? <ProjectPage /> : <Navigate to="/login" />} />
+          <Route path="user-profile/:userId" element={loggedIn ? <ProfilePage /> : <Navigate to="/login" />} />
         </Route>
 
         {/* Login Route */}
