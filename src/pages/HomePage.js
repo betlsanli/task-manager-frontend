@@ -1,29 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Paper, Typography } from '@mui/material';
+import React from 'react';
 import Dashboard from '../components/dashboard/Dashboard';
-import AdminDashboard from '../components/dashboard/AdminDashboard'
+import AdminDashboard from '../components/dashboard/AdminDashboard';
 
+const HomePage = ({ isAdmin }) => {
+  if (isAdmin === null) {
+    return <div>Loading...</div>;
+  }
 
-const HomePage = () => {
-    const[isAdmin, setIsAdmin] = useState(null)
-
-    useEffect(() => {
-      const user = localStorage.getItem('user');
-      if (user === null) {
-          setIsAdmin(null); // Default to false if no user is found
-      } else {
-          // Parse the user and check the `isAdmin` value
-          const parsedUser = JSON.parse(user);
-          setIsAdmin(parsedUser.isAdmin); // Use the correct property from the parsed user
-      }
-    }, []);
-
-    return (
-        <>
-          {/* Render based on isAdmin */}
-          {isAdmin === null ? null : isAdmin ? <AdminDashboard /> : <Dashboard />}
-        </>
-      );
+  return isAdmin ? <AdminDashboard /> : <Dashboard />;
 };
 
 export default HomePage;

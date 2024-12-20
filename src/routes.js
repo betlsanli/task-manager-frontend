@@ -13,49 +13,69 @@ import ProfilePage from './pages/ProfilePage';
 
 const AppRoutes = () => {
   const [loggedIn, setLoggedIn] = useState(null);
-  
-  // Check session storage on initial render
+  const [isAdmin, setIsAdmin] = useState(null);
+
   useEffect(() => {
-    const authStatus = localStorage.getItem('token');
-    if(authStatus === null){
-      setLoggedIn(false)
-    } 
-    else{
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (token) {
       setLoggedIn(true);
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setIsAdmin(parsedUser.isAdmin);
+      }
+    } else {
+      setLoggedIn(false);
+      setIsAdmin(null);
     }
   }, []);
 
-  // Login logic: store token in session storage and update token state
-  const handleLogin = () => {
-    setLoggedIn(true); // Update state to allow access to protected routes
-  };
+  const handleLogin = useCallback(() => {
+    setLoggedIn(true);
+    const user = localStorage.getItem('user');
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      setIsAdmin(parsedUser.isAdmin);
+    }
+  }, []);
 
   const handleLogout = useCallback(() => {
-    setLoggedIn(false)
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setLoggedIn(false);
+    setIsAdmin(null);
   }, []);
-  
+
+  if (loggedIn === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <BrowserRouter>
       <Routes>
         {/* Protected Routes */}
-        <Route path="/" element={loggedIn ? <Layout handleLogout={handleLogout} /> : <Navigate to="/login" />}>
-          <Route index element={loggedIn ? <HomePage /> : <Navigate to="/login" />} />
-          <Route path="projects" element={loggedIn ? <AllProjects /> : <Navigate to="/login" />} />
-          <Route path="project-dashboard/:projectId" element={loggedIn ? <ProjectDashboard /> : <Navigate to="/login" />} />
-          <Route path="project-kanban/:projectId" element={loggedIn ? <ProjectPage /> : <Navigate to="/login" />} />
-          <Route path="tasks" element={loggedIn ? <AllTasks /> : <Navigate to="/login" />} />
-          <Route path="teams" element={loggedIn ? <AllTeams /> : <Navigate to="/login" />} />
-          <Route path="user-profile/:userId" element={loggedIn ? <ProfilePage /> : <Navigate to="/login" />} />
+        <Route
+          path="/"
+          element={
+            loggedIn ? <Layout handleLogout={handleLogout} isAdmin={isAdmin} /> : <Navigate to="/login" />
+          }
+        >
+          <Route index element={<HomePage isAdmin={isAdmin} />} />
+          <Route path="projects" element={<AllProjects />} />
+          <Route path="project-dashboard/:projectId" element={<ProjectDashboard />} />
+          <Route path="project-kanban/:projectId" element={<ProjectPage />} />
+          <Route path="tasks" element={<AllTasks />} />
+          <Route path="teams" element={<AllTeams />} />
+          <Route path="user-profile/:userId" element={<ProfilePage />} />
         </Route>
 
-        {/* Login Route */}
+        {/* Public Routes */}
         <Route path="/login" element={loggedIn ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
-
-        {/* Register Route */}
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Default fallback route */}
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* Default Fallback */}
+        <Route path="*" element={<Navigate to={loggedIn ? "/" : "/login"} />} />
       </Routes>
     </BrowserRouter>
   );
