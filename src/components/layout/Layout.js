@@ -6,8 +6,8 @@ import { Outlet } from 'react-router-dom';
 import useAxiosInterceptor from '../../hooks/useAxiosInterceptor';
 
 function Layout({handleLogout}) {
-  const loggedIn = localStorage.getItem('token') !== null; // Check token existence
-  useAxiosInterceptor(handleLogout, loggedIn);
+  /* const loggedIn = localStorage.getItem('token') !== null; // Check token existence
+  useAxiosInterceptor(handleLogout, loggedIn); */
   return (
     <>
       {/* Top Navigation Menu */}

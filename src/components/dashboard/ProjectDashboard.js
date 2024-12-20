@@ -5,6 +5,7 @@ import { Pie } from 'react-chartjs-2';
 import axiosInstance from '../../axiosInstance';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import dayjs from 'dayjs';
+import AssignUsersModal from '../assignUsersModal/AssignUsersModal'; // Import the AssignUsersModal
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -23,7 +24,9 @@ const ProjectDashboard = () => {
   const [totalTaskCount, setTotalTaskCount] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [assignedUsersCount, setAssignedUsersCount] = useState(null);
   const [form] = Form.useForm();
+  const [isAssignUsersModalVisible, setIsAssignUsersModalVisible] = useState(false); // Modal visibility state
 
   useEffect(() => {
     // Fetch project details
@@ -70,6 +73,19 @@ const ProjectDashboard = () => {
         setLoading(false);
       });
 
+    // Fetch assigned users count
+    axiosInstance
+      .get(`/team/get-count/${projectId}`)
+      .then((response) => {
+        setAssignedUsersCount(response.data); // Set the count of assigned users
+      })
+      .catch((error) => {
+        console.error('Error fetching assigned users count:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
     const user = JSON.parse(localStorage.getItem('user'));
     // Check if the user is an admin
     if (user.isAdmin) {
@@ -90,6 +106,10 @@ const ProjectDashboard = () => {
         });
     }
   }, [projectId, form]);
+
+  const updateAssignedUsersCount = (newCount) => {
+    setAssignedUsersCount(newCount);
+  };
 
   const handleSubmit = (values) => {
     const updatedProject = { title: values.title, description: values.description };
@@ -157,60 +177,58 @@ const ProjectDashboard = () => {
               ) : (
                 <>
                   <Title level={4}>
-                    
-                      <Form
-                        form={form}
-                        layout="vertical"
-                        onFinish={handleSubmit}
-                        initialValues={{ title: project?.title, description: project?.description }}
+                    <Form
+                      form={form}
+                      layout="vertical"
+                      onFinish={handleSubmit}
+                      initialValues={{ title: project?.title, description: project?.description }}
+                    >
+                      <Form.Item
+                        name="title"
+                        label="Project Title"
+                        rules={[{ required: true, message: 'Please input the project title!' }]}
                       >
-                        <Form.Item
-                          name="title"
-                          label="Project Title"
-                          rules={[{ required: true, message: 'Please input the project title!' }]}
-                        >
-                          <Input autoFocus disabled={!isEditMode} />
-                        </Form.Item>
+                        <Input autoFocus disabled={!isEditMode} />
+                      </Form.Item>
 
-                        <Form.Item
-                          name="description"
-                          label="Project Description"
-                          rules={[{ required: true, message: 'Please input the project description!' }]}
-                        >
-                          <Input.TextArea disabled={!isEditMode} />
-                        </Form.Item>
+                      <Form.Item
+                        name="description"
+                        label="Project Description"
+                        rules={[{ required: true, message: 'Please input the project description!' }]}
+                      >
+                        <Input.TextArea disabled={!isEditMode} />
+                      </Form.Item>
 
-                        <div className="task-meta">
-                          <div>
-                            <p>Created At: {formatDate(project?.createdAt)}</p>
-                          </div>
-                          <div>
-                            <p>Last Modified At: {formatDate(project?.lastModifiedAt)}</p>
-                          </div>
+                      <div className="task-meta">
+                        <div>
+                          <p>Created At: {formatDate(project?.createdAt)}</p>
                         </div>
+                        <div>
+                          <p>Last Modified At: {formatDate(project?.lastModifiedAt)}</p>
+                        </div>
+                      </div>
 
-                        {isEditable && (
-                          <div style={{ marginTop: '20px' }}>
-                            {!isEditMode ? (
-                              <Button
-                                type="primary"
-                                onClick={() => setIsEditMode(true)} // Allow editing
-                              >
-                                Edit
+                      {isEditable && (
+                        <div style={{ marginTop: '20px' }}>
+                          {!isEditMode ? (
+                            <Button
+                              type="primary"
+                              onClick={() => setIsEditMode(true)} // Allow editing
+                            >
+                              Edit
+                            </Button>
+                          ) : (
+                            <div>
+                              <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                                Save
                               </Button>
-                            ) : (
-                              <div>
-                                <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
-                                  Save
-                                </Button>
-                                <Button onClick={handleCancel}>Cancel</Button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </Form>                    
+                              <Button onClick={handleCancel}>Cancel</Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </Form>
                   </Title>
-                  
                 </>
               )}
             </Card>
@@ -269,7 +287,7 @@ const ProjectDashboard = () => {
           </Col>
 
           <Col span={12}>
-            <Card style={{ marginBottom: '20px' }}>
+            <Card style={{ marginBottom: '35px' }}>
               {loading ? (
                 <Spin tip="Loading Total Task Count..." />
               ) : (
@@ -291,15 +309,36 @@ const ProjectDashboard = () => {
               )}
             </Card>
 
-            {/* Assigned Users below the button */}
-            <Card style={{ marginTop: '20px' }}>
+            <Card style={{ marginTop: '35px' }}>
               <div>
                 <Title level={4}>Assigned Users</Title>
-                <Text>No users assigned yet</Text>
+                <Text>{assignedUsersCount !== null ? assignedUsersCount : 'N/A'}</Text>
+
+                {/* Conditionally render the button based on isEditable */}
+                {isEditable && (
+                  <div style={{ marginTop: '20px' }}>
+                    <Button
+                      type="primary"
+                      onClick={() => setIsAssignUsersModalVisible(true)} // Show the modal when clicked
+                      style={{ width: '100%' }}
+                    >
+                      Assign Users
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
           </Col>
         </Row>
+
+        {/* Assign Users Modal */}
+        <AssignUsersModal
+          projectId={projectId}
+          visible={isAssignUsersModalVisible}
+          onClose={() => setIsAssignUsersModalVisible(false)} // Close the modal
+          updateAssignedUsersCount={updateAssignedUsersCount}
+        />
+
       </Content>
     </Layout>
   );
