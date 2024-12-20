@@ -162,6 +162,14 @@ const TaskDetail = ({ visible, task, onClose, onSave, handleDeleteTask}) => {
                 <Form.Item label="Due Date" name="dueDate">
                   <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
                 </Form.Item>
+                <div className="task-meta">
+                  <div>
+                    <p>Started At: {formatDate(task.startedAt)}</p>
+                  </div>
+                  <div>
+                    <p>Completed At: {formatDate(task.completedAt)}</p>
+                  </div>
+                </div>
               </Form>
 
               <>
