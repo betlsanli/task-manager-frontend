@@ -149,7 +149,7 @@ const ProjectDashboard = () => {
       {
         label: 'Task Priority Distribution',
         data: priorityStats ? priorityStats.map((stat) => stat.count) : [],
-        backgroundColor: ['#4BC0C0', '#FF9F40', '#FFCD56', '#FF6384'],
+        backgroundColor: ['#FB4848', '#FCFA59', '#FFB044', '#C0FF63'],
         hoverOffset: 4,
       },
     ],

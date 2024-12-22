@@ -2,9 +2,9 @@ import { useDraggable } from '@dnd-kit/core';
 import '../Kanban.css';
 
 const statusColors = {
-  TO_DO: 'rgba(91, 9, 109, 0.68)',
-  IN_PROGRESS: 'rgba(124, 131, 9, 0.68)',
-  DONE: 'rgba(51, 131, 9, 0.68)',
+  TO_DO: 'rgba(255, 99, 132, 0.68)',
+  IN_PROGRESS: 'rgba(255, 206, 86, 0.68)',
+  DONE: 'rgba(54, 162, 235, 0.68)',
 };
 
 export function TaskCard({ task, onDoubleClick }) {
@@ -40,7 +40,7 @@ export function TaskCard({ task, onDoubleClick }) {
     >
       <h3 className="task-title">{task.title}</h3>
       <p className="task-description">{task.description}</p>
-      <p className="task-user">
+      <p className="task-user" style={{ color: '#444444' }}>
         Assigned to: {assignedUser?.firstName} {assignedUser?.lastName}
       </p>
       <p className="task-priority">Priority: {task.priority}</p>

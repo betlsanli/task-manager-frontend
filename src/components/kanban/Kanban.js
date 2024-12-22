@@ -44,7 +44,6 @@ const Kanban = ({projectId}) => {
     if (!taskToUpdate || taskToUpdate.status === newStatus) return;
 
   
-    // Optimistically update the UI
     const updatedTask = {
       ...taskToUpdate,
       status: newStatus,

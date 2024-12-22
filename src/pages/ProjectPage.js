@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Kanban from '../components/kanban/Kanban';
-import { Box, Typography } from '@mui/material';
+import { Typography, Card } from 'antd';
 import axiosInstance from '../axiosInstance';
 
 
+const { Title } = Typography;
 
 const ProjectPage = () => {
   const { projectId } = useParams(); 
@@ -24,10 +25,30 @@ const ProjectPage = () => {
 
   return (
 
-    <div>
-      <h1>{details.title}</h1>
-      <Kanban projectId = {projectId}></Kanban>
+    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}>
+      {/* Header with the project title */}
+      <Card 
+        style={{ 
+          border: 'none', 
+          backgroundColor: '#f0f2f5', // Grey background
+          borderRadius: 0 // No rounded corners
+        }}
+      >
+        <Title 
+          level={2} 
+          style={{ 
+            margin: 0, 
+            color: 'black' // White title text
+          }}
+        >
+          {details.title ? `${details.title}` : 'Loading Project...'}
+        </Title>
+      </Card>
+
+      {/* Kanban board */}
+      <Kanban projectId={projectId} />
     </div>
+  
     
   );
 };

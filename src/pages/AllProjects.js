@@ -15,30 +15,6 @@ const projects = [
 
 const AllProjects = () => {
 
-  /*
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    axios.get('/api/projects')
-      .then((response) => setProjects(response.data))
-      .catch((error) => console.error('Error fetching projects:', error));
-  }, []);
-
-  */
-  /*
-  useEffect(() => {
-    fetch('/api/projects')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
-        }
-        return response.json();
-      })
-      .then((data) => setProjects(data))
-      .catch((error) => console.error('Error fetching projects:', error));
-  }, []);
-*/
-
   return (
     <>
       <Typography variant="h4" fontWeight="bold" style={{ margin: '16px 0', padding: '0 25px', fontSize: '25px' }}>
@@ -78,53 +54,7 @@ const AllProjects = () => {
     </>
   );
 
-    /*
-    <Box 
-        padding={4} 
-        sx={{ 
-            backgroundColor: '#FFFFFF', 
-            height: '100vh',
-            overflowY: 'auto',
-
-        }}
-    >
-      <Typography variant="h4" fontWeight="bold" mb={3}>
-        All Projects
-      </Typography>
-
-      {projects.map((project) => (
-        <Link
-          key={project.id}
-          to={`/project/${project.id}`}
-          style={{
-            textDecoration: 'none',
-            color: 'inherit',
-          }}
-        >
-          <Box
-            sx={{
-              border: '1px solid #E0E0E0',
-              borderRadius: 3,
-              padding: 2,
-              mb: 3,
-              boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
-              transition: 'background-color 0.2s ease',
-              '&:hover': { backgroundColor: '#EFEFEF' },
-            }}
-          >
-            <Typography variant="h6">{project.name}</Typography>
-            <Typography variant="body2" color="textSecondary">
-              Lead: {project.lead}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" mt={1}>
-              Description: {project.description}
-            </Typography>
-          </Box>
-        </Link>
-      ))}
-    </Box>
-  );
-  */
+  
 };
 
 export default AllProjects;

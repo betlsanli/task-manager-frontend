@@ -1,10 +1,9 @@
 /* General Styles for the Kanban Board */
 .kanban-container {
   padding: 20px;
-  background-color: #121212;
+  background-color: #f0f2f5; /* Light background */
   min-height: 100%;
-  color: #FFFFFF; /* White text */
-
+  color: #000000; /* Dark text */
 }
 
 .kanban-title {
@@ -12,8 +11,7 @@
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #FFFFFF; /* White text */
-
+  color: #000000; /* Dark text */
 }
 
 /* Columns Container */
@@ -21,65 +19,58 @@
   display: flex;
   gap: 20px;
   justify-content: space-between;
-  flex-wrap: wrap;  /* Ensure columns wrap to new rows if needed */
-  margin: 0 auto;  /* Center the columns container */
-  max-width: 100%;  /* Ensure it doesn't overflow */
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 /* Column Styles */
 .column-container {
-  width: calc(33.33% - 20px); /* Make each column take 1/3 of the space, minus the gap */
-  background-color: #1E1E1E;
+  width: calc(33.33% - 20px);
+  background-color: #ffffff; /* White column background */
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Stronger shadow for dark theme */
-  box-sizing: border-box;  /* Make sure padding doesn't affect width calculation */
-  position: relative; /* This allows absolute positioning for the + button */
-  color: #FFFFFF; /* White text */
-
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
+  box-sizing: border-box;
+  position: relative;
+  color: #000000; /* Dark text */
 }
 
-/* Column Title (Header) */
+/* Column Title */
 .column-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #000000;
   margin-bottom: 15px;
-  position: relative; /* Necessary for absolute positioning of the + button */
 }
 
-/* "+" Button for adding task (now an icon) */
+/* "+" Button */
 .add-task-button {
-  color: #ffffff;  
+  color: #ffffff;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-bottom: 20px;
   padding: 8px;
-  border: 2px solid transparent; /* Border matching the button text */
-  border-radius: 5px; /* Rounded corners */
-  background-color: #664192; /* Keep transparent to match minimal design */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-
+  border: none;
+  border-radius: 5px;
+  background-color: #1890ff; /* Antd primary color */
 }
 
 .add-task-button:hover {
-  background-color: #BB86FC; 
+  background-color: #40a9ff; /* Lighter blue on hover */
 }
 
 @media (max-width: 768px) {
-  /* Adjust for smaller screens, for example, 2 columns or stack them */
   .column-container {
-    width: calc(50% - 20px);  /* 2 columns on smaller screens */
+    width: calc(50% - 20px);
   }
 }
 
 @media (max-width: 480px) {
-  /* Adjust for very small screens (mobile), stack columns vertically */
   .column-container {
-    width: 100%;  /* 1 column on very small screens */
+    width: 100%;
   }
 }
-
 
 /* Task Cards Container */
 .task-cards-container {
@@ -90,32 +81,33 @@
 
 /* Task Card Styles */
 .task-card {
-  background-color: #333333;
+  background-color: #f9f9f9; /* Light gray card background */
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
   cursor: pointer;
   transition: box-shadow 0.2s ease-in-out;
-  color: #FFFFFF; /* White text */
-
+  color: #000000; /* Dark text */
 }
 
 .task-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7); /* Deeper shadow on hover */
-  background-color: #424242; /* Slightly lighter gray on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+  background-color: #ffffff; /* White on hover */
 }
 
 .task-title {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #000000;
 }
 
 .task-description {
   font-size: 0.875rem;
-  color: #B0BEC5;
-  margin-top: 8px;
+  color: #5E595A; /* Darker gray text */
+  padding-bottom: 5px;
 }
+
+
 
 /* Add a smooth drag effect to the task cards */
 .task-card {
@@ -178,12 +170,12 @@
 
 .task-due-date {
   font-size: 0.9em;
-  color: #B7BBEE; /* Red to signify urgency */
+  color: #FBF8F8; /* Red to signify urgency */
   margin-top: 4px;
+
 }
 
 .task-priority {
   font-size: 0.9em;
-  color: #B7BBEE; /* Red to signify urgency */
-  margin-top: 4px;
+  color: #FBF8F8; /* Red to signify urgency */
 }
