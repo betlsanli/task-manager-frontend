@@ -8,7 +8,7 @@ import DeleteConfirmationModal from '../DeletionConfirmation/DeleteConfirmationM
 const { Text } = Typography;
 
 const ProjectsModal = ({ visible, onClose }) => {
-  const navigate = useNavigate(); // Hook to navigate programmatically
+  const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -19,6 +19,9 @@ const ProjectsModal = ({ visible, onClose }) => {
   const [sortField, setSortField] = useState('title'); // Default sorting by title
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteProjectId, setDeleteProjectId] = useState(null);
+
+  // Determine if the user is an admin
+  const isAdmin = JSON.parse(localStorage.getItem('user'))?.isAdmin;
 
   // Fetch projects on modal visibility
   useEffect(() => {
@@ -156,13 +159,15 @@ const ProjectsModal = ({ visible, onClose }) => {
             onChange={handleSearchChange}
             style={{ marginBottom: 16 }}
           />
-          <Button
-            type="primary"
-            onClick={() => setIsCreateModalVisible(true)}
-            style={{ marginBottom: 16 }}
-          >
-            Create Project
-          </Button>
+          {isAdmin && (
+            <Button
+              type="primary"
+              onClick={() => setIsCreateModalVisible(true)}
+              style={{ marginBottom: 16 }}
+            >
+              Create Project
+            </Button>
+          )}
 
           <Table
             columns={columns}
