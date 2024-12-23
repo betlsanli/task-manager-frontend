@@ -31,7 +31,7 @@ const TaskUserDetails = ({ task}) => {
   const handleAssigneeUpdate = () => {
     const updatedTask = { 
       ...task, 
-      assignees: assigneeList.map(user => user.userId) // Extract only userId
+      assignees: assigneeList // Extract only userId
     };
     console.log("Updating task with:", updatedTask); // Debugging
 

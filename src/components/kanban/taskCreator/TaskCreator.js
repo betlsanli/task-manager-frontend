@@ -19,7 +19,7 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
       ...values,
       projectId,
       dueDate: values.dueDate ? values.dueDate.toISOString() : null,
-      assignees: assigneeList.map(user => user.userId),
+      assignees: assigneeList,
       startedAt: values.status === 'IN_PROGRESS' ? now : null,
       completedAt: values.status === 'DONE' ? now : null,
     };
