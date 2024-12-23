@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Button, DatePicker, Select } from 'antd';
+import { Modal, Form, Input, Button, DatePicker, Select, List, Avatar } from 'antd';
 import axiosInstance from '../../../axiosInstance';
 
 
@@ -7,6 +7,10 @@ const { Option } = Select;
 
 const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
   const [form] = Form.useForm();
+  const [allUsers, setAllUsers] = useState([]);
+  const [assigneeList, setAssigneeList] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+
 
   const handleFinish = (values) => {
     const now = new Date().toISOString();
@@ -15,7 +19,7 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
       ...values,
       projectId,
       dueDate: values.dueDate ? values.dueDate.toISOString() : null,
-      assignees: [],
+      assignees: assigneeList.map(user => user.userId),
       startedAt: values.status === 'IN_PROGRESS' ? now : null,
       completedAt: values.status === 'DONE' ? now : null,
     };
@@ -36,7 +40,66 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
     if (!visible) {
       form.resetFields();
     }
-  }, [visible, form]);
+    if (projectId == null) {
+      return null;
+    }
+    axiosInstance.get(`/team/${projectId}`)
+      .then(response => {
+        const projectUsers = response.data.map((assignment) => assignment.userDto);
+        setAllUsers(projectUsers);
+      })
+      .catch(error => {
+        console.error('Failed to fetch all users of list', error);
+      });
+  }, [visible, form, projectId]);
+
+  const handleSelectChange = (value) => {
+    console.log("Selected user IDs from dropdown:", value);
+    setSelectedUserIds(value);
+  };
+  
+
+  const handleAddUsers = () => {
+    console.log("Selected User IDs before adding to assigneeList:", selectedUserIds);
+  
+    const selectedUsers = allUsers.filter(user =>
+      selectedUserIds.includes(user.userId) && !assigneeList.some(existingUser => existingUser.userId === user.userId)
+    );
+  
+    console.log("Users to be added to assigneeList:", selectedUsers);
+  
+    setAssigneeList(prevList => [...prevList, ...selectedUsers]);
+    setSelectedUserIds([]); // Clear selected IDs
+  };
+  
+
+  const handleRemoveUser = (userId) => {
+    setAssigneeList(prevList => prevList.filter(user => user.userId !== userId));
+  };
+
+  const userSelect = () => {
+    const unassignedUsers = allUsers.filter(user =>
+      !assigneeList.some(selectedUser => selectedUser.userId === user.userId)
+    );
+
+    return (
+      <Select
+        mode="multiple"
+        allowClear
+        showSearch
+        placeholder="Assign a new user"
+        optionFilterProp="children"
+        onChange={handleSelectChange}
+        value={selectedUserIds}
+      >
+        {unassignedUsers.map(user => (
+          <Option key={user.userId} value={user.userId}>
+            {user.firstName} {user.lastName}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
 
   return (
     <Modal
@@ -90,6 +153,44 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
             initialValue={null}
           />
         </Form.Item>
+
+        <div>
+          <div style={{ marginBottom: '16px' }}>Assign Users</div>
+          <List
+            itemLayout="horizontal"
+            dataSource={assigneeList}
+            footer={
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center' }}>
+                {userSelect()}
+                <Button
+                  type="default"
+                  onClick={handleAddUsers}
+                >
+                  Add Selected Users
+                </Button>
+              </div>
+            }
+            renderItem={user => (
+              <List.Item
+                key={user.userId}
+                actions={[
+                  <Button
+                    danger
+                    onClick={() => handleRemoveUser(user.userId)}
+                    type='link'
+                  >
+                    Remove
+                  </Button>
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={<Avatar>{user.firstName[0]}</Avatar>}
+                  title={`${user.firstName} ${user.lastName}`}
+                />
+              </List.Item>
+            )}
+          />
+        </div>
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
