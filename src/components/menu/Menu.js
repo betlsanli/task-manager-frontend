@@ -59,26 +59,22 @@ const MenuBar = ({ onLogout }) => {
       }}
     >
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Typography.Text
-          style={{
-            color: 'black',
-            fontSize: '20px',
-            fontWeight: 'bold',
-            marginRight: '16px',
-          }}
-        >
-          CIRA
-        </Typography.Text>
-      </div>
-
-      {/* Home Button */}
       <Button
         type="link"
-        icon={<HomeOutlined />}
-        style={{ color: 'black' }}
+        style={{
+          color: 'black',
+          fontSize: '20px',
+          fontWeight: 'bold',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'center',
+          marginRight: '16px',
+        }}
         onClick={() => navigate('/')}
-      />
+      >
+        CIRA
+      </Button>
+
 
       {/* Profile Dropdown (aligned to the right) */}
       <div style={{ marginLeft: 'auto' }}>
