@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Card, Col, Row, Typography, Button, Space, Table } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../../axiosInstance";
+import TaskDetail from '../kanban/taskDetail/TaskDetail.js'; 
+
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -11,6 +13,9 @@ const Dashboard = () => {
   const [assignedTasks, setAssignedTasks] = useState([]); // New state to store assigned tasks
   const [totalTasks, setTotalTasks] = useState(0);
   const navigate = useNavigate();
+  const [selectedTask, setSelectedTask] = useState(null); 
+  const [modalVisible, setModalVisible] = useState(false); 
+
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem('user')).userId;
@@ -24,9 +29,19 @@ const Dashboard = () => {
 
     // Fetch assigned tasks
     axiosInstance.get(`/task/of-user/${userId}`)
-      .then((response) => {
+      .then(async (response) => {
         console.log('Assigned Tasks:', response.data);
-        setAssignedTasks(response.data);
+
+        // Fetch project titles for each task
+        const tasksWithProjectTitles = await Promise.all(response.data.map(async (task) => {
+          const projectResponse = await axiosInstance.get(`/project/${task.projectId}`);
+          return {
+            ...task,
+            projectTitle: projectResponse.data.title, // Add project title
+          };
+        }));
+
+        setAssignedTasks(tasksWithProjectTitles);
       })
       .catch((error) => console.error('Error fetching assigned tasks:', error));
 
@@ -100,10 +115,13 @@ const Dashboard = () => {
       key: 'action',
       render: (_, record) => (
         <Button
-          type="link"
-          onClick={() => navigate(`/task-detail/${record.id}`)}
+          type="primary"
+          onClick={() => {
+            setSelectedTask(record);
+            setModalVisible(true); 
+          }}
         >
-          View Task
+          Edit Task
         </Button>
       ),
     },
@@ -148,6 +166,20 @@ const Dashboard = () => {
           </Row>
         </Content>
       </Layout>
+      {/* Task Detail Modal */}
+      <TaskDetail
+        visible={modalVisible}
+        task={selectedTask}
+        onClose={() => setModalVisible(false)}
+        onSave={(updatedTask) => {
+          setAssignedTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.id === updatedTask.id ? updatedTask : task
+            )
+          );
+          setModalVisible(false);
+        }}
+      />
     </Layout>
   );
 };
