@@ -36,9 +36,18 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
       });
   };
 
+  const handleClose = () => {
+    setSelectedUserIds([]);  // Reset selected users
+    setAssigneeList([]);      // Reset assignees
+    onClose();                // Call the original onClose handler
+  };
+  
+
   useEffect(() => {
     if (!visible) {
       form.resetFields();
+      setSelectedUserIds([]);  // Reset selected users here too
+      setAssigneeList([]);
     }
     if (projectId == null) {
       return null;
@@ -105,7 +114,7 @@ const TaskCreator = ({ projectId, visible, onClose, addNewTaskToProject}) => {
     <Modal
       title="Create a new task"
       visible={visible}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
     >
       <Form layout="vertical" form={form} onFinish={handleFinish}>
