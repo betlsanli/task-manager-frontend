@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, List, Button, Select } from 'antd';
-import axiosInstance from "../../../axiosInstance";
+import axios from "axios";
 import './TaskUserDetails.css';
 
 const { Option } = Select;
@@ -14,9 +14,10 @@ const TaskUserDetails = ({ task}) => {
     if (task) {
       setAssigneeList(task.assignees);
 
-      axiosInstance.get(`/team/${task.projectId}`)
+      axios.get(`/team/${task.projectId}`)
       .then(response => {
-        setAllUsers(response.data);
+        const projectUsers = response.data.map((assignment) => assignment.userDto);
+        setAllUsers(projectUsers);
       })
       .catch(error => {
         console.error('Failed to fetch all users of list', error);
@@ -25,11 +26,16 @@ const TaskUserDetails = ({ task}) => {
 
   }, [task]);
 
+
+
   const handleAssigneeUpdate = () => {
-    const updatedTask = { ...task, assignees: assigneeList };
+    const updatedTask = { 
+      ...task, 
+      assignees: assigneeList.map(user => user.userId) // Extract only userId
+    };
     console.log("Updating task with:", updatedTask); // Debugging
 
-    axiosInstance.put(`/task/edit/${task.id}`, updatedTask)
+    axios.put(`/task/edit/${task.id}`, updatedTask)
       .then(response => {
         const updatedTaskData = response.data;
         console.log("Task updated successfully:", updatedTaskData); // Debugging
@@ -42,7 +48,7 @@ const TaskUserDetails = ({ task}) => {
 
   const handleRemoveUser = (userId) => {
 
-    var user = assigneeList.find(user => user.id === userId);
+    var user = assigneeList.find(user => user.userId === userId);
     var index = assigneeList.indexOf(user)
     if (index !== -1) {
       assigneeList.splice(index, 1);
@@ -57,7 +63,7 @@ const TaskUserDetails = ({ task}) => {
 
   const handleAddUsers = () => {
     const selectedUsers = allUsers.filter(user =>
-      selectedUserIds.includes(user.id) && !assigneeList.some(existingUser => existingUser.id === user.id)
+      selectedUserIds.includes(user.userId) && !assigneeList.some(existingUser => existingUser.userId === user.userId)
     );
 
     selectedUsers.forEach(element => {assigneeList.push(element)})
@@ -70,7 +76,7 @@ const TaskUserDetails = ({ task}) => {
 
   const userSelect = () => {
     const unassignedUsers = allUsers.filter(user => 
-      !assigneeList.some(assignedUser => assignedUser.id === user.id)
+      !assigneeList.some(assignedUser => assignedUser.userId === user.userId)
     );
 
     return (
@@ -84,7 +90,7 @@ const TaskUserDetails = ({ task}) => {
         value={selectedUserIds}
       >
         {unassignedUsers.map(user => (
-          <Option key={user.id} value={user.id}>
+          <Option key={user.userId} value={user.userId}>
             {user.firstName} {user.lastName}
           </Option>
         ))}
@@ -112,7 +118,7 @@ const TaskUserDetails = ({ task}) => {
         }
         renderItem={user => (
           <List.Item
-            actions={[<Button danger type="link" onClick={() => handleRemoveUser(user.id)}>Remove</Button>]}
+            actions={[<Button danger type="link" onClick={() => handleRemoveUser(user.userId)}>Remove</Button>]}
           >
             <List.Item.Meta
               avatar={<Avatar>{user.firstName[0]}{user.lastName[0]}</Avatar>}
