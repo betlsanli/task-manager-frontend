@@ -4,9 +4,9 @@ import { Avatar, Tooltip } from 'antd';
 
 
 const statusColors = {
-  TO_DO: 'rgba(255, 99, 132, 0.68)',
-  IN_PROGRESS: 'rgba(255, 206, 86, 0.68)',
-  DONE: 'rgba(54, 162, 235, 0.68)',
+  TO_DO: 'rgba(250, 233, 240, 0.68)',
+  IN_PROGRESS: 'rgba(250, 249, 233, 0.68)',
+  DONE: 'rgba(233, 250, 234, 0.68)',
 };
 
 export function TaskCard({ task, onDoubleClick }) {
@@ -48,7 +48,7 @@ export function TaskCard({ task, onDoubleClick }) {
       <div className="task-assignees">
         {assignees.map((user) => (
           <Tooltip key={user.userId} title={`${user.firstName} ${user.lastName}`}>
-            <Avatar style={{ backgroundColor: '#664192', marginRight: '8px' }}>
+            <Avatar style={{ backgroundColor: '#1890ff', marginRight: '8px' }}>
               {user.firstName[0]}{user.lastName[0]}
             </Avatar>
           </Tooltip>
