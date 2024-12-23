@@ -50,6 +50,7 @@ const TaskDetail = ({ visible, task, onClose, onSave, handleDeleteTask}) => {
   const handleSaveClick = () => {
     const now = new Date();
     form.validateFields().then((values) => {
+      // Create a new task object with the form values
       const updatedTask = { ...taskData, ...values };
 
       // Update startedAt and completedAt based on the new status
