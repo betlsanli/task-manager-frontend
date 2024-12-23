@@ -1,7 +1,7 @@
 /* General Styles for the Kanban Board */
 .kanban-container {
   padding: 20px;
-  background-color: #f0f2f5; /* Light background */
+  background-color: #f5f5f5; /* Light background */
   min-height: 100%;
   color: #000000; /* Dark text */
 }

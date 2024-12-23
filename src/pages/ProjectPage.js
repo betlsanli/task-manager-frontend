@@ -25,12 +25,12 @@ const ProjectPage = () => {
 
   return (
 
-    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header with the project title */}
       <Card 
         style={{ 
           border: 'none', 
-          backgroundColor: '#f0f2f5', // Grey background
+          backgroundColor: '#f5f5f5', // Grey background
           borderRadius: 0 // No rounded corners
         }}
       >
