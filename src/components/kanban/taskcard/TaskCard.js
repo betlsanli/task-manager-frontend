@@ -1,5 +1,7 @@
 import { useDraggable } from '@dnd-kit/core';
 import '../Kanban.css';
+import { Avatar, Tooltip } from 'antd';
+
 
 const statusColors = {
   TO_DO: 'rgba(255, 99, 132, 0.68)',
@@ -8,7 +10,7 @@ const statusColors = {
 };
 
 export function TaskCard({ task, onDoubleClick }) {
-  const assignedUser = task.assignees?.[0];
+  const { assignees = [] } = task;
 
   const formattedDueDate = task.dueDate
     ? new Date(task.dueDate).toLocaleDateString()
@@ -40,9 +42,15 @@ export function TaskCard({ task, onDoubleClick }) {
     >
       <h3 className="task-title">{task.title}</h3>
       <p className="task-description">{task.description}</p>
-      <p className="task-user" style={{ color: '#444444' }}>
-        Assigned to: {assignedUser?.firstName} {assignedUser?.lastName}
-      </p>
+      <div className="task-assignees">
+        {assignees.map((user) => (
+          <Tooltip key={user.userId} title={`${user.firstName} ${user.lastName}`}>
+            <Avatar style={{ backgroundColor: '#664192', marginRight: '8px' }}>
+              {user.firstName[0]}{user.lastName[0]}
+            </Avatar>
+          </Tooltip>
+        ))}
+      </div>
       <p className="task-priority">Priority: {task.priority}</p>
       <p className="task-due-date">Due: {formattedDueDate}</p>
       {/* <p className="task-started-at">Started At: {task.startedAt ? new Date(task.startedAt).toLocaleString() : 'Not started'}</p>
