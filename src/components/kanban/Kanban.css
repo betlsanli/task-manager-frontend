@@ -170,12 +170,12 @@
 
 .task-due-date {
   font-size: 0.9em;
-  color: #FBF8F8; /* Red to signify urgency */
+  color: #2B2B2B; /* Red to signify urgency */
   margin-top: 4px;
 
 }
 
 .task-priority {
   font-size: 0.9em;
-  color: #FBF8F8; /* Red to signify urgency */
+  color: #2B2B2B; /* Red to signify urgency */
 }

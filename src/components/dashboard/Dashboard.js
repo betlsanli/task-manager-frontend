@@ -44,22 +44,32 @@ const Dashboard = () => {
       <Layout>
         <Content style={{ margin: '16px' }}>
           {/* Statistics Cards */}
-          <Row gutter={16}>
-            <Col span={15}>
-              <Card>
-                <Title level={4}>{assignedProjects.length || 0}</Title>
+          <Row gutter={[16,16]} align="middle">
+            <Col span={10} style={{ marginTop: '20px' }}>
+              <Card style={{ height: '350px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+
+                <Title level={4} style={{marginTop:'140px'}}>{assignedProjects.length || 0}</Title>
                 <Text>Assigned Projects</Text>
+                {/* Manage Projects Button inside the Assigned Projects Card */}
+                <Button 
+                  type="primary" 
+                  block 
+                  style={{ marginTop: '10px' }} 
+                  onClick={showProjectModal}
+                >
+                  Manage Projects
+                </Button>
               </Card>
             </Col>
-            <Col span={15} style={{ marginTop: '20px' }}>
-              <Card>
+            <Col span={10} style={{ marginTop: '20px' }}>
+              <Card style={{ height: '350px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Title level={4}>{totalTasks || 0}</Title>
                 <Text>Total Tasks</Text>
               </Card>
             </Col>
           </Row>
 
-          <div style={{ marginTop: '80px' }}>
+          {/* <div style={{ marginTop: '80px' }}>
             <Row gutter={16}>
               <Col span={20}>
                 <Card>
@@ -71,7 +81,7 @@ const Dashboard = () => {
                 </Card>
               </Col>
             </Row>
-          </div>
+          </div> */}
 
           <ProjectModal
             visible={isProjectModalVisible}
