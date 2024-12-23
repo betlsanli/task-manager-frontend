@@ -48,7 +48,7 @@ export function TaskCard({ task, onDoubleClick }) {
       <div className="task-assignees">
         {assignees.map((user) => (
           <Tooltip key={user.userId} title={`${user.firstName} ${user.lastName}`}>
-            <Avatar style={{ backgroundColor: '#f5f5f5', marginRight: '8px', color: 'black' }}>
+            <Avatar style={{ backgroundColor: 'white', marginRight: '8px', color: 'black' }}>
               {user.firstName[0]}{user.lastName[0]}
             </Avatar>
           </Tooltip>
