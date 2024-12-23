@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Button, Divider, Typography, Input } from 'antd';
-import { SearchOutlined, DownOutlined, HomeOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { Layout, Menu, Dropdown, Avatar, Button, Typography } from 'antd';
+import { HomeOutlined, UserOutlined } from '@ant-design/icons';
 import axiosInstance from '../../axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,10 +28,6 @@ const MenuBar = ({ onLogout }) => {
     navigate('/login');
   };
 
- 
-
-  
-
   const profileMenu = (
     <Menu>
       {currentUser && (
@@ -39,8 +35,8 @@ const MenuBar = ({ onLogout }) => {
           <Menu.Item disabled style={{ color: 'black' }}>
             Name: {currentUser.firstName} {currentUser.lastName}
           </Menu.Item>
-          <Menu.Item disabled style={{color: 'black'}}>Email: {currentUser.email}</Menu.Item>
-          <Menu.Item disabled style={{color: 'black'}}>
+          <Menu.Item disabled style={{ color: 'black' }}>Email: {currentUser.email}</Menu.Item>
+          <Menu.Item disabled style={{ color: 'black' }}>
             Role: {currentUser.isAdmin ? 'Admin' : 'User'}
           </Menu.Item>
           <Menu.Divider />
@@ -54,24 +50,40 @@ const MenuBar = ({ onLogout }) => {
   return (
     <Header
       style={{
-        backgroundColor: '#664192',
+        backgroundColor: '#f5f5f5',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between', // Ensures elements are spaced apart
+        justifyContent: 'space-between',
+        boxShadow: 'none',  // Remove the drop shadow
+        height: '50px',     // Make the header thinner
       }}
     >
+      {/* Logo */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Typography.Text
+          style={{
+            color: 'black',
+            fontSize: '20px',
+            fontWeight: 'bold',
+            marginRight: '16px',
+          }}
+        >
+          CIRA
+        </Typography.Text>
+      </div>
+
       {/* Home Button */}
       <Button
         type="link"
         icon={<HomeOutlined />}
-        style={{ color: 'white' }}
+        style={{ color: 'black' }}
         onClick={() => navigate('/')}
       />
 
       {/* Profile Dropdown (aligned to the right) */}
       <div style={{ marginLeft: 'auto' }}>
         <Dropdown overlay={profileMenu} placement="bottomRight">
-          <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+          <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer', color: 'black', borderColor: 'black' }} />
         </Dropdown>
       </div>
     </Header>

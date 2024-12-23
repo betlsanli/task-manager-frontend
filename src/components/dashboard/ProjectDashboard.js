@@ -168,7 +168,7 @@ const ProjectDashboard = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ padding: '20px', background: '#fff' }}>
+      <Content style={{ padding: '20px', background: '#f5f5f5' }}>
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Card>
