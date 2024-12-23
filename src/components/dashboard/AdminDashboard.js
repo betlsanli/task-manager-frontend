@@ -124,13 +124,11 @@ const AdminDashboard = () => {
             />
           </div>
 
-          {/* Open the Project Modal */}
           <ProjectModal
             visible={isProjectModalVisible}
             onClose={closeProjectModal}
           />
 
-          {/* Open the Users Modal */}
           <UsersModal
             visible={isUsersModalVisible}
             onClose={closeUsersModal}

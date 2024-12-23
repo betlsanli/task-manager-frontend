@@ -14,18 +14,18 @@ const Dashboard = () => {
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem('user')).id;
     
-    // Fetch assigned projects
+    //assigned projects
     axiosInstance.get(`/project/all-project`)
       .then((response) => {
-        console.log('Assigned Projects:', response.data); // Log the response for debugging
+        console.log('Assigned Projects:', response.data); 
         setAssignedProjects(response.data);
       })
       .catch((error) => console.error('Error fetching assigned projects:', error));
 
-    // Fetch total tasks count for assigned projects
+    //total tasks count for assigned projects
     axiosInstance.get(`/task/get-total-count`)
       .then((response) => {
-        console.log('Total Tasks Count:', response.data); // Log the response for debugging
+        console.log('Total Tasks Count:', response.data); 
         setTotalTasks(response.data);
       })
       .catch((error) => console.error('Error fetching total tasks count:', error));
@@ -59,7 +59,6 @@ const Dashboard = () => {
             </Col>
           </Row>
 
-          {/* Quick Actions */}
           <div style={{ marginTop: '80px' }}>
             <Row gutter={16}>
               <Col span={20}>
@@ -74,7 +73,6 @@ const Dashboard = () => {
             </Row>
           </div>
 
-          {/* Open the Project Modal */}
           <ProjectModal
             visible={isProjectModalVisible}
             onClose={closeProjectModal}

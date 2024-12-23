@@ -5,7 +5,7 @@ import { Pie } from 'react-chartjs-2';
 import axiosInstance from '../../axiosInstance';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import dayjs from 'dayjs';
-import AssignUsersModal from '../assignUsersModal/AssignUsersModal'; // Import the AssignUsersModal
+import AssignUsersModal from '../assignUsersModal/AssignUsersModal'; 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -128,7 +128,7 @@ const ProjectDashboard = () => {
 
   const handleCancel = () => {
     form.setFieldsValue({ title: project?.title, description: project?.description });
-    setIsEditMode(false); // Exit edit mode when canceled
+    setIsEditMode(false); //Exit edit mode when canceled
   };
 
   const statusChartData = {

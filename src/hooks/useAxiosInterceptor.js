@@ -7,14 +7,14 @@ const useAxiosInterceptor = (onLogout, loggedIn) => {
 
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
-      response => response, // Pass successful response through
+      response => response, 
       error => {
         if (error.response && error.response.status === 401) {
           // Session expired or unauthorized response
-          localStorage.removeItem('token'); // Clear token from localStorage
+          localStorage.removeItem('token'); 
           localStorage.removeItem('user');
           onLogout();
-          navigate('/login'); // Redirect to login page
+          navigate('/login'); 
         }
         return Promise.reject(error);
       }
