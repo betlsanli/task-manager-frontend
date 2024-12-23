@@ -42,6 +42,9 @@ export function TaskCard({ task, onDoubleClick }) {
     >
       <h3 className="task-title">{task.title}</h3>
       <p className="task-description">{task.description}</p>
+      
+      <p className="task-priority">Priority: {task.priority}</p>
+      <p className="task-due-date">Due: {formattedDueDate}</p>
       <div className="task-assignees">
         {assignees.map((user) => (
           <Tooltip key={user.userId} title={`${user.firstName} ${user.lastName}`}>
@@ -51,8 +54,6 @@ export function TaskCard({ task, onDoubleClick }) {
           </Tooltip>
         ))}
       </div>
-      <p className="task-priority">Priority: {task.priority}</p>
-      <p className="task-due-date">Due: {formattedDueDate}</p>
       {/* <p className="task-started-at">Started At: {task.startedAt ? new Date(task.startedAt).toLocaleString() : 'Not started'}</p>
       <p className="task-completed-at">Completed At: {task.completedAt ? new Date(task.completedAt).toLocaleString() : 'Not completed'}</p> */}
 
